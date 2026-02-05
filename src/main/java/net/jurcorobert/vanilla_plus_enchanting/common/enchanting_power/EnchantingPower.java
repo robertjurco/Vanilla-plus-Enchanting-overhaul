@@ -39,6 +39,10 @@ public class EnchantingPower {
         return ench_power;
     }
 
+    public static int get(ItemStack stack) {
+        return get(stack, false);
+    }
+
     public static void set(ItemStack stack, int value) {
         CompoundTag tag = new CompoundTag();
         CustomData existing = stack.get(DataComponents.CUSTOM_DATA);
