@@ -1,25 +1,33 @@
 
-Installation information
+Custom Enchanting Mod
 =======
 
-This template repository can be directly cloned to get you started with a new
-mod. Simply create a new repository cloned from this one, by following the
-instructions provided by [GitHub](https://docs.github.com/en/repositories/creating-and-managing-repositories/creating-a-repository-from-a-template).
+A fully custom enchanting system for Minecraft built with NeoForge, designed to give players deep control over enchanting, disenchanting, and upgrade mechanics. This mod replaces the vanilla enchanting flow with a power-based system, modifier items, XP costs, and visual customization, while remaining fully server-safe and multiplayer compatible.
 
-Once you have your clone, simply open the repository in the IDE of your choice. The usual recommendation for an IDE is either IntelliJ IDEA or Eclipse.
-
-If at any point you are missing libraries in your IDE, or you've run into problems you can
-run `gradlew --refresh-dependencies` to refresh the local cache. `gradlew clean` to reset everything 
-{this does not affect your code} and then start the process again.
-
-Mapping Names:
+Features:
 ============
-By default, the MDK is configured to use the official mapping names from Mojang for methods and fields 
-in the Minecraft codebase. These names are covered by a specific license. All modders should be aware of this
-license. For the latest license text, refer to the mapping file itself, or the reference copy here:
-https://github.com/NeoForged/NeoForm/blob/main/Mojang.md
+Custom Enchanting System
+- Custom enchanting table with its own GUI
+- Power-based enchanting system replacing vanilla randomness
+- Enchanting Power (EP) limits enchant count and upgrades
+- Modifier dusts that affect outcomes (fail chance, upgrades, curses, extra enchants)
+- Enchanting and disenchanting via books
+- Dye-based enchant foil color customization
+- Redesigned XP cost for enchanting actions
+- Bookshelf requirements (vanilla-style but with wider radius)
+- Few new enchants
 
-Additional Resources: 
+Integration with Vanilla Systems 
+- Villagers reroll offered enchanted books and items with dynamic pricing
+- Enchanted mob equipment is generated correctly 
+- Loot tables include better enchanted items and books 
+- Smithing table increases Enchanting Potential 
+- Anvil rework focused on infinite item repairing (mending is nerfed) and combining
+
+License: 
 ==========
-Community Documentation: https://docs.neoforged.net/  
-NeoForged Discord: https://discord.neoforged.net/
+MIT
+
+Notes:
+==========
+This mod is intended as both a playable feature mod and a learning resource for advanced Minecraft modding patterns (containers, syncing, enchanting logic). Feel free to fork, modify, and experiment.

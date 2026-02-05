@@ -40,7 +40,7 @@ displayName="${mod_name}" #mandatory
 
 # The description text for the mod (multi line!) (#mandatory)
 description='''
-Example mod description.
+A NeoForge-based Minecraft mod implementing a fully custom enchanting table with power-based enchanting, modifier items, disenchanting logic, and server-safe synchronization.
 '''
 
 # The [[mixins]] block allows you to declare your mixin config to FML so that it gets loaded.
