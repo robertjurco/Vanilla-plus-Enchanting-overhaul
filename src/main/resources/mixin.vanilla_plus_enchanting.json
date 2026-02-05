@@ -4,7 +4,10 @@
   "package": "net.jurcorobert.vanilla_plus_enchanting.mixin",
   "compatibilityLevel": "JAVA_21",
   "mixins": [
-    "SmithingMenuMixin"
+    "SmithingMenuMixin",
+    "OnCraftedByMixin",
+    "CraftingMenuMixin",
+    "CraftingMenuAccessor"
   ],
   "client": [
   ],
