@@ -11,16 +11,18 @@ public class CraftingTablePlayerComponent {
     // WeakHashMap ensures data is garbage collected when player object is gone
     private static final Map<Player, CraftingTablePlayerComponent> PLAYER_DATA = new WeakHashMap<>();
 
+    private final Player player;
     private int playerCraftingSeed;
     private boolean needsReroll;
 
-    private CraftingTablePlayerComponent() {
+    private CraftingTablePlayerComponent(Player player) {
         // initialize with random player crafting seed
-        this.playerCraftingSeed = new Random().nextInt();
+        this.player = player;
+        this.playerCraftingSeed = player.getRandom().nextInt();
     }
 
     public static CraftingTablePlayerComponent get(Player player) {
-        return PLAYER_DATA.computeIfAbsent(player, p -> new CraftingTablePlayerComponent());
+        return PLAYER_DATA.computeIfAbsent(player, CraftingTablePlayerComponent::new);
     }
 
     public int getPlayerCraftingSeed() {
@@ -33,7 +35,7 @@ public class CraftingTablePlayerComponent {
 
     public void rerollIfNeeded() {
         if (needsReroll) {
-            this.playerCraftingSeed = new Random().nextInt();
+            this.playerCraftingSeed = player.getRandom().nextInt();
             this.needsReroll = false;
         }
     }

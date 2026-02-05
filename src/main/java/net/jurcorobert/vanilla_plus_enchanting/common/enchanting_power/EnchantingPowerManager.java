@@ -26,7 +26,6 @@ import java.util.Random;
 public class EnchantingPowerManager {
     private static final Map<Identifier, int[]> ENCHANTING_POWER = new HashMap<>();
     private static final Map<Identifier, Integer> ENCHANTING_POWER_BOOK = new HashMap<>();
-    public static final Random RANDOM = new Random();
 
     // ####################################################### LOADERS #################################################
 
@@ -174,10 +173,6 @@ public class EnchantingPowerManager {
         } while (value < min || value > max);
 
         return value;
-    }
-
-    public static int getRandomPowerCrafted(ItemStack stack) {
-        return getRandomPowerCrafted(stack, RANDOM.nextInt());
     }
 
     public static int getEnchPowerScaledByLevel(int basePower, int level){
