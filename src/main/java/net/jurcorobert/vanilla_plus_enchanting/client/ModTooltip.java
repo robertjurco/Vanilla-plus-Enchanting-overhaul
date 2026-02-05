@@ -1,6 +1,8 @@
 package net.jurcorobert.vanilla_plus_enchanting.client;
 
+import net.jurcorobert.vanilla_plus_enchanting.common.enchanting_power.EnchantingPower;
 import net.jurcorobert.vanilla_plus_enchanting.common.registry.ModItems;
+import net.jurcorobert.vanilla_plus_enchanting.constants.ModConstants;
 import net.jurcorobert.vanilla_plus_enchanting.constants.ModTags;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
@@ -12,6 +14,39 @@ public class ModTooltip {
 
     public static void onTooltip(ItemTooltipEvent event) {
         ItemStack stack = event.getItemStack();
+
+        // Enchantable item (with durability)
+        if (stack.isDamageableItem()) {
+            int power = EnchantingPower.get(stack, event.getFlags().isCreative());
+
+            int maxDurability = stack.getMaxDamage();
+            int damage = stack.getDamageValue();
+            int currentDurability = maxDurability - damage;
+
+            event.getToolTip().add(Component.empty());
+
+            event.getToolTip().add(
+                    Component.literal("Enchanting Power: " + power)
+                            .withStyle(ChatFormatting.BLUE)
+            );
+
+            event.getToolTip().add(
+                    Component.literal(
+                            "Durability: " + currentDurability + " / " + maxDurability
+                    ).withStyle(ChatFormatting.GRAY)
+            );
+        }
+
+        // Enchanted book
+        if (stack.is(Items.ENCHANTED_BOOK)) {
+            int power = EnchantingPower.get(stack, event.getFlags().isCreative());
+
+            event.getToolTip().add(Component.empty());
+            event.getToolTip().add(
+                    Component.literal("Enchanting Power: " + power)
+                            .withStyle(ChatFormatting.BLUE)
+            );
+        }
 
         // Ingredients
         if (stack.is(ModTags.Items.CUSTOM_ENCHANTING_INGREDIENTS)) {
