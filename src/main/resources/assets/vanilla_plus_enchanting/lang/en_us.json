@@ -1,13 +1,5 @@
 {
-  "itemGroup.vanilla_plus_enchanting": "Example Mod Tab",
-  "block.vanilla_plus_enchanting.example_block": "Example Block",
-  "item.vanilla_plus_enchanting.example_item": "Example Item",
-
-  "vanilla_plus_enchanting.configuration.title": "Example Mod Configs",
-  "vanilla_plus_enchanting.configuration.section.examplemod.common.toml": "Example Mod Configs",
-  "vanilla_plus_enchanting.configuration.section.examplemod.common.toml.title": "Example Mod Configs",
-  "vanilla_plus_enchanting.configuration.items": "Item List",
-  "vanilla_plus_enchanting.configuration.logDirtBlock": "Log Dirt Block",
-  "vanilla_plus_enchanting.configuration.magicNumberIntroduction": "Magic Number Text",
-  "vanilla_plus_enchanting.configuration.magicNumber": "Magic Number"
+  "vanilla_plus_enchanting.configuration.title": "Vanilla plus: Enchanting overhaul Configs",
+  "vanilla_plus_enchanting.configuration.section.examplemod.common.toml": "Vanilla plus: Enchanting overhaul Configs",
+  "vanilla_plus_enchanting.configuration.section.examplemod.common.toml.title": "Vanilla plus: Enchanting overhaul Configs"
 }
