@@ -150,7 +150,7 @@ public class EnchantingPowerManager {
         return -1;
     }
 
-    public static int getRandomPowerCrafted(ItemStack stack, Random random) {
+    public static int getRandomPowerCrafted(ItemStack stack, int seed) {
         Item item = stack.getItem();
         Identifier id = BuiltInRegistries.ITEM.getKey(item);
 
@@ -166,12 +166,18 @@ public class EnchantingPowerManager {
         double mean = (max + min) / 2.0;
         double stddev = (max - min) / 5.0;
 
+        Random random = new Random(seed); // seed makes it deterministic
+
         int value;
         do {
             value = (int) Math.round(random.nextGaussian() * stddev + mean);
         } while (value < min || value > max);
 
         return value;
+    }
+
+    public static int getRandomPowerCrafted(ItemStack stack) {
+        return getRandomPowerCrafted(stack, RANDOM.nextInt());
     }
 
     public static int getEnchPowerScaledByLevel(int basePower, int level){
