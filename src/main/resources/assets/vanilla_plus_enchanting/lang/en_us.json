@@ -1,5 +1,11 @@
 {
   "vanilla_plus_enchanting.configuration.title": "Vanilla plus: Enchanting overhaul Configs",
-  "vanilla_plus_enchanting.configuration.section.examplemod.common.toml": "Vanilla plus: Enchanting overhaul Configs",
-  "vanilla_plus_enchanting.configuration.section.examplemod.common.toml.title": "Vanilla plus: Enchanting overhaul Configs"
+  "vanilla_plus_enchanting.configuration.section.vanilla_plus_enchanting.common.toml": "Vanilla plus: Enchanting overhaul Configs",
+  "vanilla_plus_enchanting.configuration.section.vanilla_plus_enchanting.common.toml.title": "Vanilla plus: Enchanting overhaul Configs",
+
+  "item.vanilla_plus_enchanting.diamond_dust": "Diamond Dust",
+  "item.vanilla_plus_enchanting.amethyst_powder": "Amethyst Powder",
+  "item.vanilla_plus_enchanting.echo_powder": "Echo Powder",
+  "item.vanilla_plus_enchanting.enchanting_powder": "Enchanting Powder",
+  "item.vanilla_plus_enchanting.netherite_powder": "Netherite Powder"
 }

@@ -1,11 +1,10 @@
 package net.jurcorobert.vanilla_plus_enchanting;
 
+import net.jurcorobert.vanilla_plus_enchanting.common.registry.ModItems;
 import net.jurcorobert.vanilla_plus_enchanting.config.Config;
-import net.jurcorobert.vanilla_plus_enchanting.constants.Constants;
-import org.slf4j.Logger;
+import net.jurcorobert.vanilla_plus_enchanting.constants.ModConstants;
 
-import com.mojang.logging.LogUtils;
-
+import net.minecraft.world.item.CreativeModeTabs;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.Mod;
@@ -17,7 +16,7 @@ import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
 import net.neoforged.neoforge.event.server.ServerStartingEvent;
 
 // The value here should match an entry in the META-INF/neoforge.mods.toml file
-@Mod(Constants.MOD_ID)
+@Mod(ModConstants.MOD_ID)
 public class VanillaPlusEnchanting {
     // The constructor for the mod class is the first code that is run when your mod is loaded.
     // FML will recognize some parameter types like IEventBus or ModContainer and pass them in automatically.
@@ -31,6 +30,9 @@ public class VanillaPlusEnchanting {
         // Do not add this line if there are no @SubscribeEvent-annotated functions in this class, like onServerStarting() below.
         NeoForge.EVENT_BUS.register(this);
 
+        // Register registries
+        ModItems.register(modEventBus);
+
         // Register the item to a creative tab
         modEventBus.addListener(this::addCreative);
 
@@ -43,7 +45,13 @@ public class VanillaPlusEnchanting {
     }
 
     private void addCreative(BuildCreativeModeTabContentsEvent event) {
-
+        if (event.getTabKey() == CreativeModeTabs.INGREDIENTS) {
+            event.accept(ModItems.DIAMOND_DUST);
+            event.accept(ModItems.ENCHANTING_POWDER);
+            event.accept(ModItems.AMETHYST_POWDER);
+            event.accept(ModItems.ECHO_POWDER);
+            event.accept(ModItems.NETHERITE_POWDER);
+        }
     }
 
     // You can use SubscribeEvent and let the Event Bus discover methods to call

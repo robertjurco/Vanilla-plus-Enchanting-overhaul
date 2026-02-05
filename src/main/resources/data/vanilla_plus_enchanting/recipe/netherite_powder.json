@@ -1,0 +1,9 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": ["minecraft:netherite_ingot"],
+  "result": {
+    "id": "vanilla_plus_enchanting:netherite_powder",
+    "count": 1
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": ["minecraft:amethyst_shard"],
+  "result": {
+    "id": "vanilla_plus_enchanting:amethyst_powder",
+    "count": 1
+  }
+}

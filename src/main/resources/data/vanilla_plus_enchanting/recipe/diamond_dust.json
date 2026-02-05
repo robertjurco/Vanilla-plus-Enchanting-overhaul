@@ -1,0 +1,9 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": ["minecraft:diamond"],
+  "result": {
+    "id": "vanilla_plus_enchanting:diamond_dust",
+    "count": 1
+  }
+}

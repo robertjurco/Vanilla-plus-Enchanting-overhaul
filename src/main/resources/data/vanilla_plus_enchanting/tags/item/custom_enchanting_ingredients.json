@@ -1,0 +1,14 @@
+{
+  "replace": false,
+  "values": [
+    "minecraft:gunpowder",
+    "minecraft:glowstone_dust",
+    "minecraft:sugar",
+    "minecraft:redstone",
+    "vanilla_plus_enchanting:diamond_dust",
+    "vanilla_plus_enchanting:echo_powder",
+    "vanilla_plus_enchanting:amethyst_powder",
+    "vanilla_plus_enchanting:netherite_powder",
+    "vanilla_plus_enchanting:enchanting_powder"
+  ]
+}

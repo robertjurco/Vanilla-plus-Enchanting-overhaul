@@ -1,0 +1,9 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": ["minecraft:echo_shard"],
+  "result": {
+    "id": "vanilla_plus_enchanting:echo_powder",
+    "count": 1
+  }
+}
