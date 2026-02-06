@@ -18,6 +18,7 @@ public class ModTooltip {
         // Enchantable item (with durability)
         if (stack.isDamageableItem()) {
             int power = EnchantingPower.get(stack, event.getFlags().isCreative());
+            if (power < 0) return;
 
             int maxDurability = stack.getMaxDamage();
             int damage = stack.getDamageValue();
@@ -40,6 +41,7 @@ public class ModTooltip {
         // Enchanted book
         if (stack.is(Items.ENCHANTED_BOOK)) {
             int power = EnchantingPower.get(stack, event.getFlags().isCreative());
+            if (power < 0) return;
 
             event.getToolTip().add(Component.empty());
             event.getToolTip().add(

@@ -31,11 +31,6 @@ public class EnchantingPower {
             ench_power = readValue(stack);
         }
 
-        if (ench_power < 0) {
-            ModConstants.LOGGER.warn("EnchantingPower.get() returned -1 (fallback)!");
-            return -1;
-        }
-
         return ench_power;
     }
 
