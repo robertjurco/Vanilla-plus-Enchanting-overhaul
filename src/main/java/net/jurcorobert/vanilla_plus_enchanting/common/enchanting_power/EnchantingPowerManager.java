@@ -3,6 +3,7 @@ package net.jurcorobert.vanilla_plus_enchanting.common.enchanting_power;
 import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
+import net.jurcorobert.vanilla_plus_enchanting.Config;
 import net.jurcorobert.vanilla_plus_enchanting.constants.ModConstants;
 import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponents;
@@ -94,7 +95,7 @@ public class EnchantingPowerManager {
 
     // ####################################################### CALCULATIONS #################################################
 
-    private static int calculateBaseBookPower(ItemStack stack) {
+    public static int calculateBaseBookPower(ItemStack stack) {
         Map<Identifier, Integer> enchants = getBookEnchantments(stack);
         if (enchants.isEmpty()) return 0;
 
@@ -145,11 +146,13 @@ public class EnchantingPowerManager {
         return -1;
     }
 
-    public static int getEnchPowerVillagerTrade(ItemStack stack){
-        return -1;
+    public static int getEnchPowerVillagerTrade(ItemStack book){
+        int basePower = EnchantingPowerManager.calculateBaseBookPower(book);
+        double tradeMultiplier = Config.ENCHANTED_BOOK_TRADE_MULTIPLIER.get();
+        return (int) ((2 - basePower) * tradeMultiplier);
     }
 
-    public static int getRandomPowerCrafted(ItemStack stack, int seed) {
+    public static int getRandomPowerCrafted(ItemStack stack, Random random) {
         Item item = stack.getItem();
         Identifier id = BuiltInRegistries.ITEM.getKey(item);
 
@@ -165,14 +168,22 @@ public class EnchantingPowerManager {
         double mean = (max + min) / 2.0;
         double stddev = (max - min) / 5.0;
 
-        Random random = new Random(seed); // seed makes it deterministic
-
         int value;
         do {
             value = (int) Math.round(random.nextGaussian() * stddev + mean);
         } while (value < min || value > max);
 
         return value;
+    }
+
+    public static int getRandomPowerCrafted(ItemStack stack, int seed) {
+        Random random = new Random(seed);
+        return getRandomPowerCrafted(stack, random);
+    }
+
+    public static int getRandomPowerCrafted(ItemStack stack) {
+        Random random = new Random();
+        return getRandomPowerCrafted(stack, random);
     }
 
     public static int getEnchPowerScaledByLevel(int basePower, int level){
@@ -198,4 +209,13 @@ public class EnchantingPowerManager {
         return result;
     }
 
+    public static int getEnchantPower(Holder<Enchantment> holder, int level) {
+        Identifier id = getEnchantmentId(holder);
+        if (id == null) return 1; // hard fallback
+
+        Integer basePower = ENCHANTING_POWER_BOOK.get(id);
+        if (basePower == null) return 1;
+
+        return getEnchPowerScaledByLevel(basePower, level);
+    }
 }

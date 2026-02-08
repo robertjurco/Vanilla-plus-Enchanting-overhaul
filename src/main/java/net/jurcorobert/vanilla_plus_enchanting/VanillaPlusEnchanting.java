@@ -1,9 +1,10 @@
 package net.jurcorobert.vanilla_plus_enchanting;
 
 import net.jurcorobert.vanilla_plus_enchanting.common.registry.ModItems;
-import net.jurcorobert.vanilla_plus_enchanting.config.Config;
 import net.jurcorobert.vanilla_plus_enchanting.constants.ModConstants;
 
+import net.jurcorobert.vanilla_plus_enchanting.villager.EnchantedBookTradePool;
+import net.jurcorobert.vanilla_plus_enchanting.villager.EnchantedItemTradePool;
 import net.minecraft.world.item.CreativeModeTabs;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -35,6 +36,10 @@ public class VanillaPlusEnchanting {
 
         // Register the item to a creative tab
         modEventBus.addListener(this::addCreative);
+
+        // Load mod specific data
+        EnchantedBookTradePool.loadPool();
+        EnchantedItemTradePool.loadPool();
 
         // Register our mod's ModConfigSpec so that FML can create and load the config file for us
         modContainer.registerConfig(ModConfig.Type.COMMON, Config.SPEC);

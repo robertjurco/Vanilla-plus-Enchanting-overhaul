@@ -1,0 +1,107 @@
+{
+  "novice": [
+    {"id": "minecraft:bane_of_arthropods", "min": 1, "max": 1},
+    {"id": "minecraft:smite", "min": 1, "max": 1},
+    {"id": "minecraft:power", "min": 1, "max": 1},
+    {"id": "minecraft:sharpness", "min": 1, "max": 1},
+
+    {"id": "minecraft:efficiency", "min": 1, "max": 1},
+    {"id": "minecraft:unbreaking", "min": 1, "max": 1},
+
+    {"id": "minecraft:protection", "min": 1, "max": 1},
+    {"id": "minecraft:fire_protection", "min": 1, "max": 1},
+    {"id": "minecraft:projectile_protection", "min": 1, "max": 1},
+    {"id": "minecraft:blast_protection", "min": 1, "max": 1}
+  ],
+
+  "apprentice": [
+    {"id": "minecraft:bane_of_arthropods", "min": 1, "max": 2},
+    {"id": "minecraft:smite", "min": 1, "max": 2},
+    {"id": "minecraft:power", "min": 1, "max": 2},
+    {"id": "minecraft:sharpness", "min": 1, "max": 2},
+    {"id": "minecraft:fire_aspect", "min": 1, "max": 1},
+    {"id": "minecraft:knockback", "min": 1, "max": 1},
+    {"id": "minecraft:punch", "min": 1, "max": 1},
+    {"id": "minecraft:looting", "min": 1, "max": 1},
+    {"id": "minecraft:piercing", "min": 1, "max": 1},
+    {"id": "minecraft:quick_charge", "min": 1, "max": 1},
+    {"id": "minecraft:riptide", "min": 1, "max": 1},
+
+    {"id": "minecraft:efficiency", "min": 1, "max": 2},
+    {"id": "minecraft:fortune", "min": 1, "max": 1},
+    {"id": "minecraft:luck_of_the_sea", "min": 1, "max": 1},
+    {"id": "minecraft:lure", "min": 1, "max": 1},
+    {"id": "minecraft:unbreaking", "min": 1, "max": 2},
+
+    {"id": "minecraft:protection", "min": 1, "max": 2},
+    {"id": "minecraft:fire_protection", "min": 1, "max": 2},
+    {"id": "minecraft:projectile_protection", "min": 1, "max": 2},
+    {"id": "minecraft:blast_protection", "min": 1, "max": 2},
+    {"id": "minecraft:depth_strider", "min": 1, "max": 1},
+    {"id": "minecraft:respiration", "min": 1, "max": 1}
+  ],
+
+  "expert": [
+    {"id": "minecraft:bane_of_arthropods", "min": 2, "max": 3},
+    {"id": "minecraft:smite", "min": 2, "max": 3},
+    {"id": "minecraft:power", "min": 2, "max": 3},
+    {"id": "minecraft:sharpness", "min": 2, "max": 3},
+    {"id": "minecraft:fire_aspect", "min": 1, "max": 2},
+    {"id": "minecraft:knockback", "min": 1, "max": 2},
+    {"id": "minecraft:punch", "min": 1, "max": 2},
+    {"id": "minecraft:looting", "min": 1, "max": 2},
+    {"id": "minecraft:piercing", "min": 1, "max": 2},
+    {"id": "minecraft:quick_charge", "min": 1, "max": 2},
+    {"id": "minecraft:riptide", "min": 1, "max": 2},
+    {"id": "minecraft:sweeping_edge", "min": 1, "max": 1},
+
+    {"id": "minecraft:efficiency", "min": 1, "max": 3},
+    {"id": "minecraft:fortune", "min": 1, "max": 2},
+    {"id": "minecraft:luck_of_the_sea", "min": 1, "max": 2},
+    {"id": "minecraft:lure", "min": 1, "max": 2},
+    {"id": "minecraft:unbreaking", "min": 2, "max": 2},
+
+    {"id": "minecraft:aqua_affinity", "min": 1, "max": 1},
+    {"id": "minecraft:protection", "min": 1, "max": 3},
+    {"id": "minecraft:fire_protection", "min": 1, "max": 3},
+    {"id": "minecraft:projectile_protection", "min": 1, "max": 3},
+    {"id": "minecraft:blast_protection", "min": 1, "max": 3},
+    {"id": "minecraft:depth_strider", "min": 1, "max": 2},
+    {"id": "minecraft:feather_falling", "min": 1, "max": 2},
+    {"id": "minecraft:respiration", "min": 1, "max": 2},
+    {"id": "minecraft:thorns", "min": 1, "max": 1}
+  ],
+
+  "master": [
+    {"id": "minecraft:bane_of_arthropods", "min": 3, "max": 4},
+    {"id": "minecraft:smite", "min": 3, "max": 4},
+    {"id": "minecraft:power", "min": 3, "max": 4},
+    {"id": "minecraft:sharpness", "min": 3, "max": 4},
+    {"id": "minecraft:channeling", "min": 1, "max": 1},
+    {"id": "minecraft:fire_aspect", "min": 2, "max": 2},
+    {"id": "minecraft:knockback", "min": 2, "max": 2},
+    {"id": "minecraft:punch", "min": 2, "max": 2},
+    {"id": "minecraft:looting", "min": 2, "max": 3},
+    {"id": "minecraft:multishot", "min": 1, "max": 1},
+    {"id": "minecraft:piercing", "min": 2, "max": 3},
+    {"id": "minecraft:quick_charge", "min": 2, "max": 3},
+    {"id": "minecraft:riptide", "min": 2, "max": 3},
+    {"id": "minecraft:sweeping_edge", "min": 2, "max": 2},
+
+    {"id": "minecraft:efficiency", "min": 2, "max": 4},
+    {"id": "minecraft:fortune", "min": 2, "max": 3},
+    {"id": "minecraft:luck_of_the_sea", "min": 2, "max": 3},
+    {"id": "minecraft:lure", "min": 2, "max": 3},
+    {"id": "minecraft:unbreaking", "min": 2, "max": 3},
+
+    {"id": "minecraft:aqua_affinity", "min": 1, "max": 1},
+    {"id": "minecraft:protection", "min": 2, "max": 4},
+    {"id": "minecraft:fire_protection", "min": 2, "max": 4},
+    {"id": "minecraft:projectile_protection", "min": 2, "max": 4},
+    {"id": "minecraft:blast_protection", "min": 2, "max": 4},
+    {"id": "minecraft:depth_strider", "min": 2, "max": 3},
+    {"id": "minecraft:feather_falling", "min": 2, "max": 3},
+    {"id": "minecraft:respiration", "min": 2, "max": 3},
+    {"id": "minecraft:thorns", "min": 2, "max": 2},
+  ]
+}

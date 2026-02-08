@@ -7,7 +7,9 @@
     "SmithingMenuMixin",
     "OnCraftedByMixin",
     "CraftingMenuMixin",
-    "CraftingMenuAccessor"
+    "CraftingMenuAccessor",
+    "VillagerTradeMixinOnSpawn",
+    "EnchantBookForEmeraldsAccessor"
   ],
   "client": [
   ],
