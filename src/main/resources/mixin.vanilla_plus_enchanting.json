@@ -10,7 +10,8 @@
     "CraftingMenuAccessor",
     "VillagerTradeMixinOnSpawn",
     "VillagerTradeMixinOnTrade",
-    "EnchantBookForEmeraldsAccessor"
+    "EnchantBookForEmeraldsAccessor",
+    "PiglinBarterMixin"
   ],
   "client": [
   ],

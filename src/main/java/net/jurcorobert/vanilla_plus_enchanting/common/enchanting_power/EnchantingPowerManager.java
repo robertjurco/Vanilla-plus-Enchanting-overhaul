@@ -146,10 +146,38 @@ public class EnchantingPowerManager {
         return -1;
     }
 
-    public static int getBookEnchPowerVillagerTrade(ItemStack book){
+    public static int getBookEnchPowerTrade(ItemStack book){
         int basePower = EnchantingPowerManager.calculateBaseBookPower(book);
         double tradeMultiplier = Config.ENCHANTED_TRADE_MULTIPLIER.get();
         return (int) ((2 - tradeMultiplier) * basePower);
+    }
+
+    public static int calculateEnchantedItemPower(ItemStack stack) {
+        Random random = new Random();
+
+        // Only applies to damageable items
+        if (!stack.isDamageableItem()) {
+            return -1;
+        }
+
+        // Base crafted power (random, JSON-driven)
+        int basePower = getRandomPowerCrafted(stack, random);
+        if (basePower < 0) {
+            return -1;
+        }
+
+        // Subtract enchantment power
+        int enchantPower = 0;
+
+        ItemEnchantments enchantments = stack.get(DataComponents.ENCHANTMENTS);
+        if (enchantments != null && !enchantments.isEmpty()) {
+            for (Object2IntMap.Entry<Holder<Enchantment>> entry : enchantments.entrySet()) {
+                enchantPower += getEnchantPower(entry.getKey(), entry.getIntValue());
+            }
+        }
+
+        // Final value (clamped)
+        return Math.max(0, basePower - enchantPower);
     }
 
     public static int getRandomPowerCrafted(ItemStack stack, Random random) {

@@ -3,7 +3,6 @@ package net.jurcorobert.vanilla_plus_enchanting.common.villager;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import net.jurcorobert.vanilla_plus_enchanting.common.enchanting_power.EnchantingPower;
 import net.jurcorobert.vanilla_plus_enchanting.common.enchanting_power.EnchantingPowerManager;
-import net.jurcorobert.vanilla_plus_enchanting.constants.ModConstants;
 import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.server.level.ServerLevel;
@@ -35,7 +34,7 @@ public class GenerateEnchantedTrade {
         if (book.isEmpty()) return null;
 
         // resolve book power
-        int power = EnchantingPowerManager.getBookEnchPowerVillagerTrade(book);
+        int power = EnchantingPowerManager.getBookEnchPowerTrade(book);
         EnchantingPower.set(book, power);
 
         // fallback
