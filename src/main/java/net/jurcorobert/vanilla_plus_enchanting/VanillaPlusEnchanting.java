@@ -3,8 +3,8 @@ package net.jurcorobert.vanilla_plus_enchanting;
 import net.jurcorobert.vanilla_plus_enchanting.common.registry.ModItems;
 import net.jurcorobert.vanilla_plus_enchanting.constants.ModConstants;
 
-import net.jurcorobert.vanilla_plus_enchanting.villager.EnchantedBookTradePool;
-import net.jurcorobert.vanilla_plus_enchanting.villager.EnchantedItemTradePool;
+import net.jurcorobert.vanilla_plus_enchanting.common.villager.EnchantedBookTradePool;
+import net.jurcorobert.vanilla_plus_enchanting.common.villager.EnchantedItemTradePool;
 import net.minecraft.world.item.CreativeModeTabs;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;

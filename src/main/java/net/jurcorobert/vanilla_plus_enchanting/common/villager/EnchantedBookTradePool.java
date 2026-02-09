@@ -1,18 +1,13 @@
-package net.jurcorobert.vanilla_plus_enchanting.villager;
+package net.jurcorobert.vanilla_plus_enchanting.common.villager;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import net.jurcorobert.vanilla_plus_enchanting.constants.ModConstants;
-import net.jurcorobert.vanilla_plus_enchanting.utils.EnchantmentHelper;
-import net.minecraft.core.Holder;
+import net.jurcorobert.vanilla_plus_enchanting.common.utils.EnchantmentHelper;
 import net.minecraft.core.RegistryAccess;
-import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.enchantment.Enchantment;
-import net.minecraft.world.item.enchantment.EnchantmentInstance;
 
 import java.io.InputStreamReader;
 import java.lang.reflect.Type;

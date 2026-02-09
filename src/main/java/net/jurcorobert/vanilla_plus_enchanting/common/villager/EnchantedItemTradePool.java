@@ -1,12 +1,13 @@
-package net.jurcorobert.vanilla_plus_enchanting.villager;
+package net.jurcorobert.vanilla_plus_enchanting.common.villager;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import net.jurcorobert.vanilla_plus_enchanting.Config;
 import net.jurcorobert.vanilla_plus_enchanting.common.enchanting_power.EnchantingPower;
 import net.jurcorobert.vanilla_plus_enchanting.common.enchanting_power.EnchantingPowerManager;
-import net.jurcorobert.vanilla_plus_enchanting.utils.EnchantmentHelper;
+import net.jurcorobert.vanilla_plus_enchanting.common.utils.EnchantmentHelper;
 import net.minecraft.core.Holder;
+import net.minecraft.core.HolderSet;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.item.Item;
@@ -94,11 +95,11 @@ public class EnchantedItemTradePool {
         Collections.shuffle(applicable, new Random(random.nextLong()));
 
         // Apply random set of enchantments
-        power = applyRandomEnchantments(stack, power, level, pool, enchantCount);
+        power = applyRandomEnchantments(stack, power, level, applicable, enchantCount);
 
         // decrease power for traded item
         if (power < 0) power = 0;
-        double tradeMultiplier = Config.ENCHANTED_BOOK_TRADE_MULTIPLIER.get();
+        double tradeMultiplier = Config.ENCHANTED_TRADE_MULTIPLIER.get();
         power = (int) (tradeMultiplier * power);
         EnchantingPower.set(stack, power);
 
@@ -111,67 +112,45 @@ public class EnchantedItemTradePool {
         for (EnchantmentEntry entry : pool) {
             Holder<Enchantment> holder = EnchantmentHelper.getEnchantmentHolder(level.registryAccess(), entry.id);
 
-            if (holder != null && holder.value().canEnchant(stack)) {
-                applicable.add(entry);
-            }
+            Enchantment enchant = holder.value();
+
+            HolderSet<Item> supported = enchant.definition().supportedItems();
+            if (!stack.is(supported)) continue;
+
+            applicable.add(entry);
         }
 
         return applicable;
     }
 
     public static int applyRandomEnchantments(ItemStack stack, int power, ServerLevel level, List<EnchantedItemTradePool.EnchantmentEntry> pool, int enchantCount) {
-        // shuffle enchant pool
-        Random random = new Random();
-        Collections.shuffle(pool, random);
-
-        // pick random enchants
+        List<EnchantmentEntry> copy = new ArrayList<>(pool);
         Set<Enchantment> applied = new HashSet<>();
+        Random random = new Random();
+        Collections.shuffle(copy, random);
 
-        for (int i = 0; i < enchantCount && !pool.isEmpty(); i++) {
-            EnchantmentEntry entry = pool.get(i);
+        int powerRemaining = power;
+
+        for (EnchantmentEntry entry : copy) {
+            if (applied.size() >= enchantCount) break;
+
             Holder<Enchantment> holder = EnchantmentHelper.getEnchantmentHolder(level.registryAccess(), entry.id);
-
-            if (holder == null) {
-                pool.remove(entry);
-                i--; // retry next
-                continue;
-            }
+            if (holder == null) continue;
 
             Enchantment enchantment = holder.value();
+            if (applied.contains(enchantment)) continue;
 
-            // skip duplicates
-            if (applied.contains(enchantment)) {
-                pool.remove(entry);
-                i--;
-                continue;
-            }
-
-
-            // level
             int levelValue = entry.min + random.nextInt(entry.max - entry.min + 1);
-
-            // check power
             int enchPower = EnchantingPowerManager.getEnchantPower(holder, levelValue);
-            if (enchPower > power) {
-                pool.remove(entry);
-                i--;
-                continue;
-            }
+            if (enchPower > powerRemaining) continue;
 
-            // apply enchant
-            power -= enchPower;
+            // Apply enchant
+            powerRemaining -= enchPower;
             stack.enchant(holder, levelValue);
             applied.add(enchantment);
-
-            // Remove incompatible enchantments from pool
-            pool.removeIf(e -> {
-                Holder<Enchantment> otherHolder = EnchantmentHelper.getEnchantmentHolder(level.registryAccess(), e.id);
-                if (otherHolder == null) return true; // remove invalid
-                return !Enchantment.areCompatible(holder, otherHolder); // remove incompatible
-            });
         }
 
-        return  power;
+        return power;
     }
 
     /** JSON data class */

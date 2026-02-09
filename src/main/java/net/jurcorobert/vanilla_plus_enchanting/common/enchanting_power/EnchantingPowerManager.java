@@ -146,10 +146,10 @@ public class EnchantingPowerManager {
         return -1;
     }
 
-    public static int getEnchPowerVillagerTrade(ItemStack book){
+    public static int getBookEnchPowerVillagerTrade(ItemStack book){
         int basePower = EnchantingPowerManager.calculateBaseBookPower(book);
-        double tradeMultiplier = Config.ENCHANTED_BOOK_TRADE_MULTIPLIER.get();
-        return (int) ((2 - basePower) * tradeMultiplier);
+        double tradeMultiplier = Config.ENCHANTED_TRADE_MULTIPLIER.get();
+        return (int) ((2 - tradeMultiplier) * basePower);
     }
 
     public static int getRandomPowerCrafted(ItemStack stack, Random random) {
