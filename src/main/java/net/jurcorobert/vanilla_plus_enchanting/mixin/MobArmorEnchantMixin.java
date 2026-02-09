@@ -28,7 +28,7 @@ public abstract class MobArmorEnchantMixin {
         Mob mob = (Mob)(Object)this;
         ItemStack stack = mob.getItemBySlot(slot);
 
-        if (stack != null && !stack.isEmpty()) {
+        if (stack != null && !stack.isEmpty() && stack.isDamageableItem()) {
             int power = EnchantingPowerManager.calculateEnchantedItemPower(stack);
             EnchantingPower.set(stack, power);
         }
