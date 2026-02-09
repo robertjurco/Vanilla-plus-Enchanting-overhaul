@@ -237,6 +237,19 @@ public class EnchantingPowerManager {
         return result;
     }
 
+    public static int getEPofEnchantsOnItem(ItemStack stack){
+        int enchantPower = 0;
+
+        ItemEnchantments enchants = stack.get(DataComponents.ENCHANTMENTS);
+        if (enchants != null) {
+            for (Object2IntMap.Entry<Holder<Enchantment>> e : enchants.entrySet()) {
+                enchantPower += EnchantingPowerManager.getEnchantPower(e.getKey(), e.getIntValue());
+            }
+        }
+
+        return enchantPower;
+    }
+
     public static int getEnchantPower(Holder<Enchantment> holder, int level) {
         Identifier id = getEnchantmentId(holder);
         if (id == null) return 1; // hard fallback

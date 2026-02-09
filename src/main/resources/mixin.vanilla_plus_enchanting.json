@@ -12,7 +12,8 @@
     "VillagerTradeMixinOnTrade",
     "EnchantBookForEmeraldsAccessor",
     "PiglinBarterMixin",
-    "MobArmorEnchantMixin"
+    "MobArmorEnchantMixin",
+    "AnvilMenuMixin"
   ],
   "client": [
   ],

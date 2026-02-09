@@ -1,8 +1,10 @@
 package net.jurcorobert.vanilla_plus_enchanting.common.utils;
 
+import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
 import net.minecraft.core.RegistryAccess;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
@@ -37,6 +39,11 @@ public class EnchantmentHelper {
                 .orElseThrow(() ->
                         new IllegalArgumentException("Unknown enchantment: " + enchantmentId)
                 );
+    }
+
+    public static List<Object2IntMap.Entry<Holder<Enchantment>>> getItemEnchantments(ItemStack stack) {
+        ItemEnchantments enchants = stack.get(DataComponents.ENCHANTMENTS);
+        return enchants != null ? new ArrayList<>(enchants.entrySet()) : List.of();
     }
 
     public static List<Holder<Enchantment>> getApplicableEnchantments(ItemStack stack) {
