@@ -36,7 +36,6 @@ public class GenerateEnchantedTrade {
 
         // resolve book power
         int power = EnchantingPowerManager.getBookEnchPowerVillagerTrade(book);
-        ModConstants.LOGGER.info(String.valueOf(power));
         EnchantingPower.set(book, power);
 
         // fallback
@@ -56,9 +55,11 @@ public class GenerateEnchantedTrade {
                 new ItemCost(Items.EMERALD, emeraldCost),
                 Optional.of(new ItemCost(Items.BOOK, 1)),
                 book,
+                offer.getUses(),
                 12,      // max uses
                 getBookTradeXp(tier),      // villager XP
-                0.05F    // price multiplier
+                0.05F,    // price multiplier
+                offer.getDemand()
         );
     }
 
@@ -77,10 +78,13 @@ public class GenerateEnchantedTrade {
 
         return new MerchantOffer(
                 new ItemCost(Items.EMERALD, emeraldCost),
+                Optional.empty(),
                 copy,
+                offer.getUses(),
                 data.maxUses,
                 data.villagerXp,
-                data.priceMultiplier
+                data.priceMultiplier,
+                offer.getDemand()
         );
     }
 
