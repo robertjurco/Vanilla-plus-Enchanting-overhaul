@@ -2,8 +2,10 @@ package net.jurcorobert.vanilla_plus_enchanting;
 
 import com.mojang.serialization.MapCodec;
 import net.jurcorobert.vanilla_plus_enchanting.common.GrindstoneHandler;
+import net.jurcorobert.vanilla_plus_enchanting.common.event.EnchantingTableEvent;
 import net.jurcorobert.vanilla_plus_enchanting.common.loot.EnchantingPowerModifier;
 import net.jurcorobert.vanilla_plus_enchanting.common.registry.ModItems;
+import net.jurcorobert.vanilla_plus_enchanting.common.registry.ModMenus;
 import net.jurcorobert.vanilla_plus_enchanting.constants.ModConstants;
 
 import net.jurcorobert.vanilla_plus_enchanting.common.villager.EnchantedBookTradePool;
@@ -51,9 +53,11 @@ public class VanillaPlusEnchanting {
 
         // Register registries
         ModItems.register(modEventBus);
+        ModMenus.register(modEventBus);
 
-        // Register the item to a creative tab
+        // Add listeners
         modEventBus.addListener(this::addCreative);
+        NeoForge.EVENT_BUS.addListener(EnchantingTableEvent::onRightClick);
 
         // Register our GLM DeferredRegister
         GLOBAL_LOOT_MODIFIER_SERIALIZERS.register(modEventBus);
