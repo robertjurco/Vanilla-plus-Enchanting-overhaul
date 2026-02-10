@@ -69,7 +69,7 @@ public class EnchantingScreen extends AbstractContainerScreen<EnchantingMenu> {
         infoPanelX = infoPanelGuiX + INFO_PANEL_SCROLL_X_OFFSET;
         infoPanelY = infoPanelGuiY + INFO_PANEL_SCROLL_Y_OFFSET;
 
-        // refreshInfoPanel();
+        refreshInfoPanel();
 
         infoPanel = new InfoScrollPanel(Minecraft.getInstance(), INFO_PANEL_SCROLL_WIDTH, INFO_PANEL_SCROLL_HEIGHT, infoPanelX, infoPanelY, this.font);
         reloadWidgets();
@@ -95,7 +95,23 @@ public class EnchantingScreen extends AbstractContainerScreen<EnchantingMenu> {
     public void setEnchantingState(EnchantingMenuState state) {
         this.clientState = state;
         ModConstants.LOGGER.info("State sent");
-        // refreshInfoPanel();
+        refreshInfoPanel();
+    }
+
+    private void refreshInfoPanel() {
+        ModConstants.LOGGER.info("refresh Info Panel");
+        if (infoPanelOpen) infoPanel.refresh(clientState);
+    }
+
+    @Override
+    public boolean mouseScrolled(double mouseX, double mouseY, double deltaX, double deltaY) {
+        // Forward vertical scroll (deltaY) to info panel if hovering
+        if (infoPanel != null && infoPanel.isMouseOver(mouseX, mouseY)) {
+            return infoPanel.mouseScrolled(mouseX, mouseY, deltaX, deltaY);
+        }
+
+        // Forward to the superclass for slot scrolling
+        return super.mouseScrolled(mouseX, mouseY, deltaX, deltaY);
     }
 
     // ---- Enchant Button ---- //
@@ -147,7 +163,7 @@ public class EnchantingScreen extends AbstractContainerScreen<EnchantingMenu> {
 
                 recalcGuiPosition();
                 rebuildWidgets();
-                //refreshInfoPanel();
+                refreshInfoPanel();
             }
 
             @Override
@@ -175,12 +191,12 @@ public class EnchantingScreen extends AbstractContainerScreen<EnchantingMenu> {
     }
 
     private void drawSlotIcons(GuiGraphics gui, int guiLeft, int guiTop) {
-        //if (clientState.slot_0()) gui.blit(ARMOR_ICON, guiLeft + 123, guiTop + 18, 0, 0, 16, 16, 16, 16);
-        //if (clientState.slot_1()) gui.blit(BOOK_ICON, guiLeft + 65, guiTop + 18, 0, 0, 16, 16, 16, 16);
-        //if (clientState.slot_2()) gui.blit(DUST_ICON, guiLeft + 47, guiTop + 53, 0, 0, 16, 16, 16, 16);
-        //if (clientState.slot_3()) gui.blit(DUST_ICON, guiLeft + 65, guiTop + 53, 0, 0, 16, 16, 16, 16);
-        //if (clientState.slot_4()) gui.blit(DUST_ICON, guiLeft + 83, guiTop + 53, 0, 0, 16, 16, 16, 16);
-        //if (clientState.slot_5()) gui.blit(DYE_ICON, guiLeft + 123, guiTop + 53, 0, 0, 16, 16, 16, 16);
+        if (clientState.slot_0()) gui.blit(RenderPipelines.GUI_TEXTURED,ARMOR_ICON, guiLeft + 123, guiTop + 18, 0, 0, 16, 16, 16, 16);
+        if (clientState.slot_1()) gui.blit(RenderPipelines.GUI_TEXTURED,BOOK_ICON, guiLeft + 65, guiTop + 18, 0, 0, 16, 16, 16, 16);
+        if (clientState.slot_2()) gui.blit(RenderPipelines.GUI_TEXTURED,DUST_ICON, guiLeft + 47, guiTop + 53, 0, 0, 16, 16, 16, 16);
+        if (clientState.slot_3()) gui.blit(RenderPipelines.GUI_TEXTURED,DUST_ICON, guiLeft + 65, guiTop + 53, 0, 0, 16, 16, 16, 16);
+        if (clientState.slot_4()) gui.blit(RenderPipelines.GUI_TEXTURED,DUST_ICON, guiLeft + 83, guiTop + 53, 0, 0, 16, 16, 16, 16);
+        if (clientState.slot_5()) gui.blit(RenderPipelines.GUI_TEXTURED,DYE_ICON, guiLeft + 123, guiTop + 53, 0, 0, 16, 16, 16, 16);
     }
 
     @Override
@@ -197,7 +213,7 @@ public class EnchantingScreen extends AbstractContainerScreen<EnchantingMenu> {
             int panelGuiX = guiLeft + imageWidth + INFO_PANEL_PADDING;
             int panelGuiY = guiTop;
 
-            gui.blit(INFO_PANEL_TEXTURE, panelGuiX, panelGuiY, 0, 0, INFO_PANEL_BG_WIDTH, INFO_PANEL_BG_HEIGHT, 257, 257);
+            gui.blit(RenderPipelines.GUI_TEXTURED, INFO_PANEL_TEXTURE, panelGuiX, panelGuiY, 0, 0, INFO_PANEL_BG_WIDTH, INFO_PANEL_BG_HEIGHT, 257, 257);
             gui.drawString(font, Component.literal("Enchanting Information"), panelGuiX + 8, panelGuiY + 8, 0x404040, false);
 
             // Update info panel position so it renders in the correct spot
