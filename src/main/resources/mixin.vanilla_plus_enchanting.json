@@ -13,7 +13,8 @@
     "EnchantBookForEmeraldsAccessor",
     "PiglinBarterMixin",
     "MobArmorEnchantMixin",
-    "AnvilMenuMixin"
+    "AnvilMenuMixin",
+    "GrindstoneMenuMixin"
   ],
   "client": [
   ],

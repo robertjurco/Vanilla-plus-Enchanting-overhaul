@@ -4,6 +4,7 @@ import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import net.jurcorobert.vanilla_plus_enchanting.common.enchanting_power.EnchantingPower;
 import net.jurcorobert.vanilla_plus_enchanting.common.enchanting_power.EnchantingPowerManager;
 import net.jurcorobert.vanilla_plus_enchanting.common.utils.EnchantmentHelper;
+import net.jurcorobert.vanilla_plus_enchanting.common.utils.SeedHelper;
 import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.world.inventory.AnvilMenu;
@@ -116,7 +117,7 @@ public class AnvilMenuMixin {
     private void handleItemCombination(ItemStack left, ItemStack right, ItemCombinerMenu menu) {
         if (!inputsChanged(left, right)) return;
 
-        Random random = new Random(computeSeed(left, right));
+        Random random = new Random(SeedHelper.computeSeed(left, right));
 
         int power = rollHighestPower(left, random, 3);
 
@@ -240,27 +241,5 @@ public class AnvilMenuMixin {
     private void resetResult(ItemCombinerMenu menu) {
         menu.getSlot(2).set(ItemStack.EMPTY);
         cost.set(0);
-    }
-
-    @Unique
-    private static long computeSeed(ItemStack left, ItemStack right) {
-        long seed = 1L;
-        seed = 31 * seed + left.getItem().hashCode();
-        seed = 31 * seed + right.getItem().hashCode();
-        seed = 31 * seed + left.getDamageValue();
-        seed = 31 * seed + right.getDamageValue();
-        seed = 31 * seed + EnchantingPower.get(left);
-        seed = 31 * seed + EnchantingPower.get(right);
-
-        for (ItemStack stack : List.of(left, right)) {
-            ItemEnchantments enchants = stack.get(DataComponents.ENCHANTMENTS);
-            if (enchants != null) {
-                for (Object2IntMap.Entry<Holder<Enchantment>> e : enchants.entrySet()) {
-                    seed = 31 * seed + e.getKey().hashCode();
-                    seed = 31 * seed + e.getIntValue();
-                }
-            }
-        }
-        return seed;
     }
 }

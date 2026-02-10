@@ -1,6 +1,7 @@
 package net.jurcorobert.vanilla_plus_enchanting;
 
 import com.mojang.serialization.MapCodec;
+import net.jurcorobert.vanilla_plus_enchanting.common.GrindstoneHandler;
 import net.jurcorobert.vanilla_plus_enchanting.common.loot.EnchantingPowerModifier;
 import net.jurcorobert.vanilla_plus_enchanting.common.registry.ModItems;
 import net.jurcorobert.vanilla_plus_enchanting.constants.ModConstants;
@@ -60,6 +61,9 @@ public class VanillaPlusEnchanting {
         // Load mod specific data
         EnchantedBookTradePool.loadPool();
         EnchantedItemTradePool.loadPool();
+
+        // Register events
+        NeoForge.EVENT_BUS.register(GrindstoneHandler.class);
 
         // Register our mod's ModConfigSpec so that FML can create and load the config file for us
         modContainer.registerConfig(ModConfig.Type.COMMON, Config.SPEC);
