@@ -29,23 +29,11 @@ public record SyncEnchantingStatePayload(EnchantingMenuState state) implements C
 
 
     public static void encode(SyncEnchantingStatePayload payload, FriendlyByteBuf buf) {
-        buf.writeBoolean(payload.state().slot_0());
-        buf.writeBoolean(payload.state().slot_1());
-        buf.writeBoolean(payload.state().slot_2());
-        buf.writeBoolean(payload.state().slot_3());
-        buf.writeBoolean(payload.state().slot_4());
-        buf.writeBoolean(payload.state().slot_5());
         buf.writeInt(payload.state().mode());
     }
 
     public static SyncEnchantingStatePayload decode(FriendlyByteBuf buf) {
         return new SyncEnchantingStatePayload(new EnchantingMenuState(
-                buf.readBoolean(),      // slot 0
-                buf.readBoolean(),      // slot 1
-                buf.readBoolean(),      // slot 2
-                buf.readBoolean(),      // slot 3
-                buf.readBoolean(),      // slot 4
-                buf.readBoolean(),      // slot 5
                 buf.readInt()           // mode
         ));
     }

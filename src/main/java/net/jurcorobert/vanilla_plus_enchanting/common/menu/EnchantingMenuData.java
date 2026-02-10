@@ -48,12 +48,6 @@ public class EnchantingMenuData {
     // ----- State ---- //
     public EnchantingMenuState getState() {
         return new EnchantingMenuState(
-                container.getItem(0).isEmpty(),
-                container.getItem(1).isEmpty(),
-                container.getItem(2).isEmpty(),
-                container.getItem(3).isEmpty(),
-                container.getItem(4).isEmpty(),
-                container.getItem(5).isEmpty(),
                 0
         );
     }

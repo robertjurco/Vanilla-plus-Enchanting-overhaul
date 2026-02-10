@@ -3,17 +3,29 @@ package net.jurcorobert.vanilla_plus_enchanting.client.screen;
 import net.jurcorobert.vanilla_plus_enchanting.common.menu.EnchantingMenu;
 import net.jurcorobert.vanilla_plus_enchanting.common.menu.EnchantingMenuState;
 import net.jurcorobert.vanilla_plus_enchanting.constants.ModConstants;
+import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractButton;
+import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
+import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipPositioner;
+import net.minecraft.client.gui.screens.inventory.tooltip.DefaultTooltipPositioner;
 import net.minecraft.client.input.InputWithModifiers;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.inventory.tooltip.TooltipComponent;
+import net.minecraft.world.item.ItemStack;
+import net.neoforged.neoforge.client.ClientHooks;
+import org.joml.Vector2i;
 import org.jspecify.annotations.NonNull;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class EnchantingScreen extends AbstractContainerScreen<EnchantingMenu> {
 
@@ -44,6 +56,13 @@ public class EnchantingScreen extends AbstractContainerScreen<EnchantingMenu> {
     private static final int INFO_PANEL_SCROLL_HEIGHT = 138;
     private static final int INFO_PANEL_SCROLL_X_OFFSET = 6;
     private static final int INFO_PANEL_SCROLL_Y_OFFSET = 20;
+
+    private final int ITEM_SLOT = 36;
+    private final int BOOK_SLOT = 37;
+    private final int DUST_SLOT_1 = 38;
+    private final int DUST_SLOT_2 = 39;
+    private final int DUST_SLOT_3 = 40;
+    private final int DYE_SLOT = 41;
 
     int infoPanelX;
     int infoPanelY;
@@ -125,8 +144,6 @@ public class EnchantingScreen extends AbstractContainerScreen<EnchantingMenu> {
         int w = 20;
         int h = 18;
 
-        Component tooltip = Component.literal("Enchant Item");
-
         AbstractButton enchantButton = new AbstractButton(x, y, w, h, Component.empty()) {
             @Override
             public void onPress(InputWithModifiers inputWithModifiers) {
@@ -147,6 +164,8 @@ public class EnchantingScreen extends AbstractContainerScreen<EnchantingMenu> {
             }
         };
 
+        Component component = clientState.mode() == 0 ? Component.literal("Enchant Item") : Component.literal("Disenchant Item");
+        enchantButton.setTooltip(Tooltip.create(component));
 
         this.addRenderableWidget(enchantButton);
     }
@@ -157,8 +176,6 @@ public class EnchantingScreen extends AbstractContainerScreen<EnchantingMenu> {
         int y = topPos + 52;
         int w = 20;
         int h = 18;
-
-        Component tooltip = Component.literal("Show Enchanting Information");
 
         AbstractButton infoButton = new AbstractButton(x, y, w, h, Component.empty()) {
             @Override
@@ -183,6 +200,9 @@ public class EnchantingScreen extends AbstractContainerScreen<EnchantingMenu> {
 
         };
 
+        Component component = infoPanelOpen ? Component.literal("Hide Enchanting information") : Component.literal("Show Enchanting information");
+        infoButton.setTooltip(Tooltip.create(component));
+
         this.addRenderableWidget(infoButton);
     }
 
@@ -196,12 +216,19 @@ public class EnchantingScreen extends AbstractContainerScreen<EnchantingMenu> {
     }
 
     private void drawSlotIcons(GuiGraphics gui, int guiLeft, int guiTop) {
-        if (clientState.slot_0()) gui.blit(RenderPipelines.GUI_TEXTURED,ARMOR_ICON, guiLeft + 123, guiTop + 18, 0, 0, 16, 16, 16, 16);
-        if (clientState.slot_1()) gui.blit(RenderPipelines.GUI_TEXTURED,BOOK_ICON, guiLeft + 65, guiTop + 18, 0, 0, 16, 16, 16, 16);
-        if (clientState.slot_2()) gui.blit(RenderPipelines.GUI_TEXTURED,DUST_ICON, guiLeft + 47, guiTop + 53, 0, 0, 16, 16, 16, 16);
-        if (clientState.slot_3()) gui.blit(RenderPipelines.GUI_TEXTURED,DUST_ICON, guiLeft + 65, guiTop + 53, 0, 0, 16, 16, 16, 16);
-        if (clientState.slot_4()) gui.blit(RenderPipelines.GUI_TEXTURED,DUST_ICON, guiLeft + 83, guiTop + 53, 0, 0, 16, 16, 16, 16);
-        if (clientState.slot_5()) gui.blit(RenderPipelines.GUI_TEXTURED,DYE_ICON, guiLeft + 123, guiTop + 53, 0, 0, 16, 16, 16, 16);
+        ItemStack slot0 = menu.getSlot(ITEM_SLOT).getItem();
+        ItemStack slot1 = menu.getSlot(BOOK_SLOT).getItem();
+        ItemStack slot2 = menu.getSlot(DUST_SLOT_1).getItem();
+        ItemStack slot3 = menu.getSlot(DUST_SLOT_2).getItem();
+        ItemStack slot4 = menu.getSlot(DUST_SLOT_3).getItem();
+        ItemStack slot5 = menu.getSlot(DYE_SLOT).getItem();
+
+        if (slot0.isEmpty()) gui.blit(RenderPipelines.GUI_TEXTURED, ARMOR_ICON, guiLeft + 123, guiTop + 18, 0, 0, 16, 16, 16, 16);
+        if (slot1.isEmpty()) gui.blit(RenderPipelines.GUI_TEXTURED, BOOK_ICON, guiLeft + 65, guiTop + 18, 0, 0, 16, 16, 16, 16);
+        if (slot2.isEmpty()) gui.blit(RenderPipelines.GUI_TEXTURED, DUST_ICON, guiLeft + 47, guiTop + 53, 0, 0, 16, 16, 16, 16);
+        if (slot3.isEmpty()) gui.blit(RenderPipelines.GUI_TEXTURED, DUST_ICON, guiLeft + 65, guiTop + 53, 0, 0, 16, 16, 16, 16);
+        if (slot4.isEmpty()) gui.blit(RenderPipelines.GUI_TEXTURED, DUST_ICON, guiLeft + 83, guiTop + 53, 0, 0, 16, 16, 16, 16);
+        if (slot5.isEmpty()) gui.blit(RenderPipelines.GUI_TEXTURED, DYE_ICON, guiLeft + 123, guiTop + 53, 0, 0, 16, 16, 16, 16);
     }
 
     private void drawArrow(GuiGraphics gui, int guiLeft, int guiTop) {
@@ -232,6 +259,50 @@ public class EnchantingScreen extends AbstractContainerScreen<EnchantingMenu> {
 
             // Update info panel position so it renders in the correct spot
             infoPanel.render(gui, mouseX, mouseY, partialTick);
+        }
+    }
+
+    ClientTooltipPositioner INFO_PANEL_AWARE = (screenW, screenH, mouseX, mouseY, tipW, tipH) -> {
+        int x = mouseX + 12;
+        int y = mouseY - 12;
+
+        x = Math.max(4, Math.min(x, screenW - tipW - 4));
+        y = Math.max(4, Math.min(y, screenH - tipH - 4));
+
+        return new Vector2i(x, y);
+    };
+
+    @Override
+    protected void renderTooltip(GuiGraphics gui, int mouseX, int mouseY) {
+        super.renderTooltip(gui, mouseX, mouseY);
+
+        if (hoveredSlot != null && !hoveredSlot.hasItem() && hoveredSlot.index >= 36) {
+
+            // Tooltip lines
+            List<Component> itemComponent = List.of(Component.literal("Item"));
+            List<Component> bookComponent = List.of(Component.literal("Book"));
+            List<Component> dustComponent = List.of(Component.literal("Dust"));
+            List<Component> dyeComponent = List.of(Component.literal("Dye"));
+
+            List<Component> component;
+
+            component = switch (hoveredSlot.index) {
+                case ITEM_SLOT -> itemComponent;
+                case BOOK_SLOT -> bookComponent;
+                case DUST_SLOT_1, DUST_SLOT_2, DUST_SLOT_3 -> dustComponent;
+                case DYE_SLOT -> dyeComponent;
+                default -> throw new IllegalStateException("Unexpected value: " + hoveredSlot.index);
+            };
+
+            // Convert to ClientTooltipComponent using ClientHooks (as in GuiGraphics)
+            List<ClientTooltipComponent> tooltipComponent =
+                    ClientHooks.gatherTooltipComponents(ItemStack.EMPTY, component, mouseX,
+                            this.width, this.height, this.font);
+
+            // Render it
+            gui.renderTooltip(this.font, tooltipComponent, mouseX, mouseY,
+                    DefaultTooltipPositioner.INSTANCE, null);
+
         }
     }
 }
