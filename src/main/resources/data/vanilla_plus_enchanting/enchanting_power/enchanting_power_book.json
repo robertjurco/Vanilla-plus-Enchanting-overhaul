@@ -49,6 +49,6 @@
   "minecraft:binding_curse": 15,
   "minecraft:vanishing_curse": 15,
 
-  "tutorialmod:vitality": 17,
-  "tutorialmod:homing": 17
+  "vanilla_plus_enchanting:vitality": 17,
+  "vanilla_plus_enchanting:homing": 17
 }

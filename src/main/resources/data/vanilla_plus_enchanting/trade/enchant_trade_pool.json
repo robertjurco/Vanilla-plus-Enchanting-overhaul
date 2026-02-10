@@ -69,7 +69,9 @@
     {"id": "minecraft:depth_strider", "min": 1, "max": 2},
     {"id": "minecraft:feather_falling", "min": 1, "max": 2},
     {"id": "minecraft:respiration", "min": 1, "max": 2},
-    {"id": "minecraft:thorns", "min": 1, "max": 1}
+    {"id": "minecraft:thorns", "min": 1, "max": 1},
+
+    {"id": "vanilla_plus_enchanting:vitality", "min": 1, "max": 1}
   ],
 
   "master": [
@@ -103,5 +105,7 @@
     {"id": "minecraft:feather_falling", "min": 2, "max": 3},
     {"id": "minecraft:respiration", "min": 2, "max": 3},
     {"id": "minecraft:thorns", "min": 2, "max": 2},
+
+    {"id": "vanilla_plus_enchanting:vitality", "min": 1, "max": 2}
   ]
 }
