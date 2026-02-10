@@ -3,7 +3,6 @@ package net.jurcorobert.vanilla_plus_enchanting.client.screen;
 import net.jurcorobert.vanilla_plus_enchanting.common.menu.EnchantingMenu;
 import net.jurcorobert.vanilla_plus_enchanting.common.menu.EnchantingMenuState;
 import net.jurcorobert.vanilla_plus_enchanting.constants.ModConstants;
-import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractButton;
@@ -11,17 +10,14 @@ import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
-import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipPositioner;
 import net.minecraft.client.gui.screens.inventory.tooltip.DefaultTooltipPositioner;
 import net.minecraft.client.input.InputWithModifiers;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.player.Inventory;
-import net.minecraft.world.inventory.tooltip.TooltipComponent;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.client.ClientHooks;
-import org.joml.Vector2i;
 import org.jspecify.annotations.NonNull;
 
 import java.util.List;
@@ -255,22 +251,12 @@ public class EnchantingScreen extends AbstractContainerScreen<EnchantingMenu> {
             int panelGuiY = guiTop;
 
             gui.blit(RenderPipelines.GUI_TEXTURED, INFO_PANEL_TEXTURE, panelGuiX, panelGuiY, 0, 0, INFO_PANEL_BG_WIDTH, INFO_PANEL_BG_HEIGHT, 257, 257);
-            gui.drawString(font, Component.literal("Enchanting Information"), panelGuiX + 8, panelGuiY + 8, 0x404040, false);
+            gui.drawString(font, Component.literal("Enchanting Information"), panelGuiX + 8, panelGuiY + 8, -12566464, false);
 
             // Update info panel position so it renders in the correct spot
             infoPanel.render(gui, mouseX, mouseY, partialTick);
         }
     }
-
-    ClientTooltipPositioner INFO_PANEL_AWARE = (screenW, screenH, mouseX, mouseY, tipW, tipH) -> {
-        int x = mouseX + 12;
-        int y = mouseY - 12;
-
-        x = Math.max(4, Math.min(x, screenW - tipW - 4));
-        y = Math.max(4, Math.min(y, screenH - tipH - 4));
-
-        return new Vector2i(x, y);
-    };
 
     @Override
     protected void renderTooltip(GuiGraphics gui, int mouseX, int mouseY) {

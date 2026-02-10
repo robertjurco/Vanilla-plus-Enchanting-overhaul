@@ -90,7 +90,7 @@ public class InfoScrollPanel extends ScrollPanel {
         List<InfoSlot> slots = new ArrayList<>();
         Random rand = new Random();
         for (int i = 0; i < 4 + rand.nextInt(4); i++)
-            slots.add(new InfoSlot(null, Component.literal("Waiting for enchanting data..."), false));
+            slots.add(new InfoSlot(null, Component.literal("Waiting for enchanting data..."), true));
         return slots;
     }
 
@@ -163,7 +163,7 @@ public class InfoScrollPanel extends ScrollPanel {
             int textX = slotX + TEXT_OFFSET_X;
 
             for (var line : lines) {
-                gui.drawString(font, line, textX, textY, slot.isError ? 0xFF5555 : 0x404040, false);
+                gui.drawString(font, line, textX, textY, slot.isError ? -33152 : -12566464, false);
                 textY += font.lineHeight;
             }
 
