@@ -14,7 +14,8 @@
     "PiglinBarterMixin",
     "MobArmorEnchantMixin",
     "AnvilMenuMixin",
-    "GrindstoneMenuMixin"
+    "GrindstoneMenuMixin",
+    "MendingMixin"
   ],
   "client": [
   ],
