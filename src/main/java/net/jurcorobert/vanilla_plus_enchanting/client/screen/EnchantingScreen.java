@@ -20,6 +20,8 @@ public class EnchantingScreen extends AbstractContainerScreen<EnchantingMenu> {
     // ---- Textures ---- //
     private static final Identifier GUI_TEXTURE = Identifier.fromNamespaceAndPath(ModConstants.MOD_ID, "textures/gui/custom_enchanting.png");
     private static final Identifier INFO_PANEL_TEXTURE = Identifier.fromNamespaceAndPath(ModConstants.MOD_ID, "textures/gui/info_panel.png");
+    private static final Identifier ARROW_RIGHT_TEXTURE = Identifier.fromNamespaceAndPath(ModConstants.MOD_ID, "textures/gui/arrow_right.png");
+    private static final Identifier ARROW_LEFT_TEXTURE = Identifier.fromNamespaceAndPath(ModConstants.MOD_ID, "textures/gui/arrow_left.png");
 
     private static final Identifier INFO_ICON = Identifier.fromNamespaceAndPath("minecraft", "textures/gui/sprites/recipe_book/button.png");
     private static final Identifier INFO_HOVER_ICON = Identifier.fromNamespaceAndPath("minecraft", "textures/gui/sprites/recipe_book/button_highlighted.png");
@@ -36,6 +38,8 @@ public class EnchantingScreen extends AbstractContainerScreen<EnchantingMenu> {
     int infoPanelGuiY;
     private static final int INFO_PANEL_BG_WIDTH = 176;
     private static final int INFO_PANEL_BG_HEIGHT = 167;
+    private static final int ARROW_WIDTH = 24;
+    private static final int ARROW_HEIGHT = 17;
     private static final int INFO_PANEL_SCROLL_WIDTH = 158;
     private static final int INFO_PANEL_SCROLL_HEIGHT = 138;
     private static final int INFO_PANEL_SCROLL_X_OFFSET = 6;
@@ -188,6 +192,7 @@ public class EnchantingScreen extends AbstractContainerScreen<EnchantingMenu> {
         // Draw main GUI
         gui.blit(RenderPipelines.GUI_TEXTURED, GUI_TEXTURE, leftPos, topPos, 0, 0, imageWidth, imageHeight, 256, 256);
         drawSlotIcons(gui, leftPos, topPos);
+        drawArrow(gui, leftPos, topPos);
     }
 
     private void drawSlotIcons(GuiGraphics gui, int guiLeft, int guiTop) {
@@ -197,6 +202,15 @@ public class EnchantingScreen extends AbstractContainerScreen<EnchantingMenu> {
         if (clientState.slot_3()) gui.blit(RenderPipelines.GUI_TEXTURED,DUST_ICON, guiLeft + 65, guiTop + 53, 0, 0, 16, 16, 16, 16);
         if (clientState.slot_4()) gui.blit(RenderPipelines.GUI_TEXTURED,DUST_ICON, guiLeft + 83, guiTop + 53, 0, 0, 16, 16, 16, 16);
         if (clientState.slot_5()) gui.blit(RenderPipelines.GUI_TEXTURED,DYE_ICON, guiLeft + 123, guiTop + 53, 0, 0, 16, 16, 16, 16);
+    }
+
+    private void drawArrow(GuiGraphics gui, int guiLeft, int guiTop) {
+        int x = guiLeft + 90;
+        int y = guiTop + 17;
+
+        Identifier tex = clientState.mode() == 0 ? ARROW_RIGHT_TEXTURE : ARROW_LEFT_TEXTURE;
+
+        gui.blit(RenderPipelines.GUI_TEXTURED, tex, x, y, 0, 0, ARROW_WIDTH, ARROW_HEIGHT, ARROW_WIDTH, ARROW_HEIGHT);
     }
 
     @Override
