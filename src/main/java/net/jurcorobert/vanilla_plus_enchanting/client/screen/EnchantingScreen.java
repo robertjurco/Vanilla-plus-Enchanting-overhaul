@@ -37,7 +37,7 @@ public class EnchantingScreen extends AbstractContainerScreen<EnchantingMenu> {
     private static final int INFO_PANEL_BG_WIDTH = 176;
     private static final int INFO_PANEL_BG_HEIGHT = 167;
     private static final int INFO_PANEL_SCROLL_WIDTH = 158;
-    private static final int INFO_PANEL_SCROLL_HEIGHT = 139;
+    private static final int INFO_PANEL_SCROLL_HEIGHT = 138;
     private static final int INFO_PANEL_SCROLL_X_OFFSET = 6;
     private static final int INFO_PANEL_SCROLL_Y_OFFSET = 20;
 
