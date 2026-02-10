@@ -129,6 +129,16 @@ public class EnchantingMenu extends AbstractContainerMenu {
 
     // ---- Server-side enchant action ---- //
 
+    public void performEnchant(ServerPlayer player) {
+        if (player.level().isClientSide() || !stillValid(player)) return;
+        if (tableData == null) return;
+
+        //int cost = tableData.expCost();
+        //if (player.experienceLevel < cost) return;
+
+        //player.giveExperienceLevels(-cost);
+        tableData.craftItemServer();
+    }
 
     @Override
     public boolean stillValid(Player player) {

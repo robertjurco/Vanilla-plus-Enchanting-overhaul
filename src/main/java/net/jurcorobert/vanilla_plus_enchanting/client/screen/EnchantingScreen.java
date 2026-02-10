@@ -2,6 +2,7 @@ package net.jurcorobert.vanilla_plus_enchanting.client.screen;
 
 import net.jurcorobert.vanilla_plus_enchanting.common.menu.EnchantingMenu;
 import net.jurcorobert.vanilla_plus_enchanting.common.menu.EnchantingMenuState;
+import net.jurcorobert.vanilla_plus_enchanting.common.network.EnchantRequestPayload;
 import net.jurcorobert.vanilla_plus_enchanting.constants.ModConstants;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
@@ -18,6 +19,8 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.client.ClientHooks;
+import net.neoforged.neoforge.client.network.ClientPacketDistributor;
+import net.neoforged.neoforge.network.PacketDistributor;
 import org.jspecify.annotations.NonNull;
 
 import java.util.List;
@@ -143,13 +146,13 @@ public class EnchantingScreen extends AbstractContainerScreen<EnchantingMenu> {
         AbstractButton enchantButton = new AbstractButton(x, y, w, h, Component.empty()) {
             @Override
             public void onPress(InputWithModifiers inputWithModifiers) {
-                // PacketDistributor.sendToServer(new EnchantRequestPayload(menu.containerId));
-                // refreshInfoPanel();
+                ClientPacketDistributor.sendToServer(new EnchantRequestPayload(menu.containerId));
+                refreshInfoPanel();
             }
 
             @Override
             protected void renderContents(GuiGraphics gui, int i, int i1, float v) {
-                Identifier tex = isHoveredOrFocused() ? ENCHANT_HOVER_ICON : ENCHANT_ICON;
+                Identifier tex = isHovered() ? ENCHANT_HOVER_ICON : ENCHANT_ICON;
                 gui.blit(RenderPipelines.GUI_TEXTURED, tex, getX(), getY(), 0, 0, getWidth(), getHeight(), getWidth(), getHeight());
 
             }

@@ -4,6 +4,8 @@ import com.mojang.serialization.MapCodec;
 import net.jurcorobert.vanilla_plus_enchanting.common.GrindstoneHandler;
 import net.jurcorobert.vanilla_plus_enchanting.common.event.EnchantingTableEvent;
 import net.jurcorobert.vanilla_plus_enchanting.common.loot.EnchantingPowerModifier;
+import net.jurcorobert.vanilla_plus_enchanting.common.network.EnchantPayloadHandler;
+import net.jurcorobert.vanilla_plus_enchanting.common.network.EnchantRequestPayload;
 import net.jurcorobert.vanilla_plus_enchanting.common.network.SyncEnchantingStatePayload;
 import net.jurcorobert.vanilla_plus_enchanting.common.registry.ModItems;
 import net.jurcorobert.vanilla_plus_enchanting.common.registry.ModMenus;
@@ -105,6 +107,12 @@ public class VanillaPlusEnchanting {
         @SubscribeEvent
         public static void register(RegisterPayloadHandlersEvent event) {
             PayloadRegistrar registrar = event.registrar(ModConstants.MOD_ID);
+
+            registrar.playToServer(
+                    EnchantRequestPayload.TYPE,
+                    EnchantRequestPayload.STREAM_CODEC,
+                    EnchantPayloadHandler::handle
+            );
 
             // Server -> Client (menu sync)
             registrar.playToClient(
