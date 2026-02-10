@@ -23,11 +23,17 @@ public class ModEnchantments {
             Identifier.fromNamespaceAndPath(ModConstants.MOD_ID, "vitality")
     );
 
+    public static final ResourceKey<Enchantment> SPRINT = ResourceKey.create(
+            Registries.ENCHANTMENT,
+            Identifier.fromNamespaceAndPath(ModConstants.MOD_ID, "sprint")
+    );
+
     public static void bootstrap(BootstrapContext<Enchantment> context) {
         var items = context.lookup(Registries.ITEM);
 
         HolderSet<Item> armor = items.getOrThrow(ItemTags.ARMOR_ENCHANTABLE);
 
+        // Vitality
         register(context, VITALITY, Enchantment.enchantment(
                 Enchantment.definition(
                         armor,
@@ -45,6 +51,27 @@ public class ModEnchantments {
                         Attributes.MAX_HEALTH,
                         LevelBasedValue.perLevel(2.0F),
                         AttributeModifier.Operation.ADD_VALUE
+                )
+        ));
+
+        // Sprint
+        register(context, SPRINT, Enchantment.enchantment(
+                Enchantment.definition(
+                        armor,
+                        5,  // weight
+                        2,  // max level
+                        Enchantment.constantCost(10),
+                        Enchantment.dynamicCost(15, 5),
+                        1,
+                        EquipmentSlotGroup.LEGS
+                )
+        ).withEffect(
+                EnchantmentEffectComponents.ATTRIBUTES,
+                new EnchantmentAttributeEffect(
+                        Identifier.fromNamespaceAndPath(ModConstants.MOD_ID, "sprint"),
+                        Attributes.MOVEMENT_SPEED,
+                        LevelBasedValue.perLevel(0.075F), // +5% per level
+                        AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL
                 )
         ));
     }
