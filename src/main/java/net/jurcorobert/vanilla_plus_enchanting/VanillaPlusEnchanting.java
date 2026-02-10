@@ -4,15 +4,19 @@ import com.mojang.serialization.MapCodec;
 import net.jurcorobert.vanilla_plus_enchanting.common.GrindstoneHandler;
 import net.jurcorobert.vanilla_plus_enchanting.common.event.EnchantingTableEvent;
 import net.jurcorobert.vanilla_plus_enchanting.common.loot.EnchantingPowerModifier;
+import net.jurcorobert.vanilla_plus_enchanting.common.network.SyncEnchantingStatePayload;
 import net.jurcorobert.vanilla_plus_enchanting.common.registry.ModItems;
 import net.jurcorobert.vanilla_plus_enchanting.common.registry.ModMenus;
 import net.jurcorobert.vanilla_plus_enchanting.constants.ModConstants;
 
 import net.jurcorobert.vanilla_plus_enchanting.common.villager.EnchantedBookTradePool;
 import net.jurcorobert.vanilla_plus_enchanting.common.villager.EnchantedItemTradePool;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.world.item.CreativeModeTabs;
+import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.config.ModConfig;
 import net.neoforged.fml.ModContainer;
@@ -21,6 +25,8 @@ import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.common.loot.IGlobalLootModifier;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
 import net.neoforged.neoforge.event.server.ServerStartingEvent;
+import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
+import net.neoforged.neoforge.network.registration.PayloadRegistrar;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
 
@@ -91,5 +97,21 @@ public class VanillaPlusEnchanting {
     @SubscribeEvent
     public void onServerStarting(ServerStartingEvent event) {
 
+    }
+
+    @EventBusSubscriber(modid = ModConstants.MOD_ID, value = Dist.CLIENT)
+    public static class ModNetwork {
+
+        @SubscribeEvent
+        public static void register(RegisterPayloadHandlersEvent event) {
+            PayloadRegistrar registrar = event.registrar(ModConstants.MOD_ID);
+
+            // Server -> Client (menu sync)
+            registrar.playToClient(
+                    SyncEnchantingStatePayload.TYPE,
+                    SyncEnchantingStatePayload.STREAM_CODEC,
+                    SyncEnchantingStatePayload::handle
+            );
+        }
     }
 }

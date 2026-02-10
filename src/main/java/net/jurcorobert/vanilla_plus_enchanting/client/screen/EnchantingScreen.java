@@ -1,6 +1,7 @@
 package net.jurcorobert.vanilla_plus_enchanting.client.screen;
 
 import net.jurcorobert.vanilla_plus_enchanting.common.menu.EnchantingMenu;
+import net.jurcorobert.vanilla_plus_enchanting.common.menu.EnchantingMenuState;
 import net.jurcorobert.vanilla_plus_enchanting.constants.ModConstants;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
@@ -47,6 +48,8 @@ public class EnchantingScreen extends AbstractContainerScreen<EnchantingMenu> {
     private InfoScrollPanel infoPanel;
     private boolean infoPanelOpen = false;
 
+    private EnchantingMenuState clientState = EnchantingMenuState.defaults();
+
     // ---- Constructor ---- //
     public EnchantingScreen(EnchantingMenu menu, Inventory playerInventory, Component title) {
         super(menu, playerInventory, title);
@@ -87,6 +90,12 @@ public class EnchantingScreen extends AbstractContainerScreen<EnchantingMenu> {
         int totalWidth = imageWidth + (infoPanelOpen ? INFO_PANEL_BG_WIDTH + INFO_PANEL_PADDING : 0);
         this.leftPos = (this.width - totalWidth) / 2;
         this.topPos = (this.height - this.imageHeight) / 2;
+    }
+
+    public void setEnchantingState(EnchantingMenuState state) {
+        this.clientState = state;
+        ModConstants.LOGGER.info("State sent");
+        // refreshInfoPanel();
     }
 
     // ---- Enchant Button ---- //

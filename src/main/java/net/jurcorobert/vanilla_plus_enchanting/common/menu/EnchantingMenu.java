@@ -1,5 +1,6 @@
 package net.jurcorobert.vanilla_plus_enchanting.common.menu;
 
+import net.jurcorobert.vanilla_plus_enchanting.common.network.SyncEnchantingStatePayload;
 import net.jurcorobert.vanilla_plus_enchanting.common.registry.ModMenus;
 import net.jurcorobert.vanilla_plus_enchanting.constants.ModTags;
 import net.minecraft.core.BlockPos;
@@ -54,14 +55,14 @@ public class EnchantingMenu extends AbstractContainerMenu {
         }
 
 
-        addSlot(new EnchantingMenuSlot(tableInv, 0, 123, 18));
-        addSlot(new EnchantingMenuSlot(tableInv, 1, 65, 18));
-        for (int i = 0; i < 3; i++) addSlot(new EnchantingMenuSlot(tableInv, i+2, 47 + i * 18, 53));
-        addSlot(new EnchantingMenuSlot(tableInv, 5, 123, 53));
+        addSlot(new EnchantingMenuSlot(this, tableInv, 0, 123, 18));
+        addSlot(new EnchantingMenuSlot(this, tableInv, 1, 65, 18));
+        for (int i = 0; i < 3; i++) addSlot(new EnchantingMenuSlot(this, tableInv, i+2, 47 + i * 18, 53));
+        addSlot(new EnchantingMenuSlot(this, tableInv, 5, 123, 53));
 
         addDataSlots(data);
 
-        // sendTableState();
+        sendTableState();
     }
 
     @Override
@@ -180,5 +181,22 @@ public class EnchantingMenu extends AbstractContainerMenu {
 
     private void addPlayerHotbar(Inventory inv) {
         for (int i = 0; i < 9; i++) addSlot(new Slot(inv, i, 8 + i * 18, 142));
+    }
+
+    // ---- Menu state ---- //
+
+    public void sendTableState() {
+        if (!level.isClientSide() && tableData != null) {
+
+            // Send updated state to all players viewing this table
+            EnchantingMenuState state = tableData.getState();
+            System.out.println("sending state");
+
+            level.getServer().getPlayerList().getPlayers().forEach(player -> {
+                if (player.containerMenu instanceof EnchantingMenu) {
+                    player.connection.send(new SyncEnchantingStatePayload(state));
+                }
+            });
+        }
     }
 }
