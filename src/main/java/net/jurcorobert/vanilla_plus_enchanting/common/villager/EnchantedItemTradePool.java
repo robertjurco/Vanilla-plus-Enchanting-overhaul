@@ -124,10 +124,12 @@ public class EnchantedItemTradePool {
     }
 
     public static int applyRandomEnchantments(ItemStack stack, int power, ServerLevel level, List<EnchantedItemTradePool.EnchantmentEntry> pool, int enchantCount) {
-        List<EnchantmentEntry> copy = new ArrayList<>(pool);
-        Set<Enchantment> applied = new HashSet<>();
         Random random = new Random();
+
+        List<EnchantmentEntry> copy = new ArrayList<>(pool);
         Collections.shuffle(copy, random);
+
+        Set<Holder<Enchantment>> applied = new HashSet<>();
 
         int powerRemaining = power;
 
@@ -137,8 +139,17 @@ public class EnchantedItemTradePool {
             Holder<Enchantment> holder = EnchantmentHelper.getEnchantmentHolder(level.registryAccess(), entry.id);
             if (holder == null) continue;
 
-            Enchantment enchantment = holder.value();
-            if (applied.contains(enchantment)) continue;
+            if (applied.contains(holder)) continue;
+
+            // Skip if already applied or incompatible with applied enchants
+            boolean compatible = true;
+            for (Holder<Enchantment> existing : applied) {
+                if (!Enchantment.areCompatible(existing, holder)) {
+                    compatible = false;
+                    break;
+                }
+            }
+            if (!compatible) continue;
 
             int levelValue = entry.min + random.nextInt(entry.max - entry.min + 1);
             int enchPower = EnchantingPowerManager.getEnchantPower(holder, levelValue);
@@ -147,7 +158,7 @@ public class EnchantedItemTradePool {
             // Apply enchant
             powerRemaining -= enchPower;
             stack.enchant(holder, levelValue);
-            applied.add(enchantment);
+            applied.add(holder);
         }
 
         return power;
