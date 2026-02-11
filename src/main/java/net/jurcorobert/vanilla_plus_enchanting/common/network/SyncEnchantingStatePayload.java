@@ -29,12 +29,48 @@ public record SyncEnchantingStatePayload(EnchantingMenuState state) implements C
 
 
     public static void encode(SyncEnchantingStatePayload payload, FriendlyByteBuf buf) {
-        buf.writeInt(payload.state().mode());
+        buf.writeInt(payload.state().getMode());
+        buf.writeFloat(payload.state().getToolBreakChance());
+        buf.writeFloat(payload.state().getFailChance());
+        buf.writeFloat(payload.state().getReducePowerMultiplier());
+        buf.writeFloat(payload.state().getExtraEnchantChance());
+        buf.writeFloat(payload.state().getUpgradeLevelChance());
+        buf.writeFloat(payload.state().getDisenchantEfficiency());
+        buf.writeBoolean(payload.state().getCursesLocked());
+        buf.writeBoolean(payload.state().getExistingEnchantsLocked());
+
+        buf.writeBoolean(payload.state().hasTooMuchSugar());
+        buf.writeBoolean(payload.state().hasTooMuchGlowstoneDust());
+        buf.writeBoolean(payload.state().hasTooMuchDiamondDust());
+        buf.writeBoolean(payload.state().hasTooMuchAmethystDust());
+        buf.writeBoolean(payload.state().hasApplicableEnchantments());
+        buf.writeBoolean(payload.state().hasNonCurseEnchantments());
+
+        buf.writeBoolean(payload.state().canEnchant());
+        buf.writeBoolean(payload.state().canDisenchant());
     }
 
     public static SyncEnchantingStatePayload decode(FriendlyByteBuf buf) {
         return new SyncEnchantingStatePayload(new EnchantingMenuState(
-                buf.readInt()           // mode
+                buf.readInt(),     // getMode
+                buf.readFloat(),   // getToolBreakChance
+                buf.readFloat(),   // getFailChance
+                buf.readFloat(),   // getReducePowerMultiplier
+                buf.readFloat(),   // getExtraEnchantChance
+                buf.readFloat(),   // getUpgradeLevelChance
+                buf.readFloat(),   // getDisenchantEfficiency
+                buf.readBoolean(), // getCursesLocked
+                buf.readBoolean(), // getExistingEnchantsLocked
+
+                buf.readBoolean(), // hasTooMuchSugar
+                buf.readBoolean(), // hasTooMuchGlowstoneDust
+                buf.readBoolean(), // hasTooMuchDiamondDust
+                buf.readBoolean(),  // hasTooMuchAmethystDust
+                buf.readBoolean(),  // hasApplicableEnchantments
+                buf.readBoolean(),  // hasNonCurseEnchantments
+
+                buf.readBoolean(), // canEnchant
+                buf.readBoolean()  // canDisenchant
         ));
     }
 

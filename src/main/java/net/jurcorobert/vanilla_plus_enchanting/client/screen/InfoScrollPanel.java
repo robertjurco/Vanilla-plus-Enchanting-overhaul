@@ -1,5 +1,6 @@
 package net.jurcorobert.vanilla_plus_enchanting.client.screen;
 
+import net.jurcorobert.vanilla_plus_enchanting.common.menu.EnchantingMenu;
 import net.jurcorobert.vanilla_plus_enchanting.common.menu.EnchantingMenuState;
 import net.jurcorobert.vanilla_plus_enchanting.constants.ModConstants;
 import net.minecraft.client.Minecraft;
@@ -9,6 +10,8 @@ import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.Items;
 import net.neoforged.neoforge.client.gui.widget.ScrollPanel;
 import org.jspecify.annotations.NonNull;
 
@@ -42,7 +45,15 @@ public class InfoScrollPanel extends ScrollPanel {
     private static final int TEXT_OFFSET_X = ICON_BG_SIZE + 6;
     private static final int TEXT_OFFSET_Y = 5;
 
+    private static final int ITEM_SLOT = 36;
+    private static final int BOOK_SLOT = 37;
+    private static final int DUST_SLOT_1 = 38;
+    private static final int DUST_SLOT_2 = 39;
+    private static final int DUST_SLOT_3 = 40;
+    private static final int DYE_SLOT = 41;
+
     private final Font font;
+    private final EnchantingMenu menu;
 
     // Menu state
     private EnchantingMenuState clientState;
@@ -71,10 +82,11 @@ public class InfoScrollPanel extends ScrollPanel {
 
 
 
-    public InfoScrollPanel(Minecraft minecraft, int width, int height, int left, int top, Font font) {
+    public InfoScrollPanel(Minecraft minecraft, int width, int height, int left, int top, Font font, EnchantingMenu menu) {
         super(minecraft, width, height, top, left);
 
         this.font = font;
+        this.menu = menu;
     }
 
     public void refresh(EnchantingMenuState state) {
@@ -88,9 +100,100 @@ public class InfoScrollPanel extends ScrollPanel {
     private List<InfoSlot> buildInfoSlots() {
         ModConstants.LOGGER.info("buildInfoSlots");
         List<InfoSlot> slots = new ArrayList<>();
-        Random rand = new Random();
-        for (int i = 0; i < 4 + rand.nextInt(4); i++)
-            slots.add(new InfoSlot(null, Component.literal("Waiting for enchanting data..."), true));
+
+        if (clientState == null) {
+            slots.add(new InfoSlot(null, Component.literal("Waiting for enchanting data..."), false));
+            return slots;
+        }
+
+        // Bookshelf
+
+        // Experience
+
+        // Power
+
+        // Applicable enchantments
+        if (clientState.getMode() == 0 &&
+                !clientState.hasApplicableEnchantments() &&
+                !menu.getSlot(ITEM_SLOT).getItem().isEmpty() &&
+                !menu.getSlot(BOOK_SLOT).getItem().isEmpty() &&
+                menu.getSlot(ITEM_SLOT).getItem().isDamageableItem() &&
+                menu.getSlot(BOOK_SLOT).getItem().is(Items.ENCHANTED_BOOK))
+            slots.add(new InfoSlot(BOOK_ICON, Component.literal("No applicable enchantments"), true));
+
+        if (clientState.getMode() == 1 &&
+                !clientState.hasNonCurseEnchantments() &&
+                clientState.getCursesLocked() &&
+                !menu.getSlot(ITEM_SLOT).getItem().isEmpty() &&
+                !menu.getSlot(BOOK_SLOT).getItem().isEmpty() &&
+                menu.getSlot(ITEM_SLOT).getItem().isDamageableItem() &&
+                menu.getSlot(BOOK_SLOT).getItem().is(Items.BOOK))
+            slots.add(new InfoSlot(BOOK_ICON, Component.literal("No enchantments to transfer"), true));
+
+        // Mode checks
+        if (clientState.hasTooMuchDiamondDust())
+            slots.add(new InfoSlot(DIAMOND_ICON, Component.literal("Max one Diamond Dust"), true));
+        else {
+            if (clientState.getMode() == 0 && (
+                    menu.getSlot(ITEM_SLOT).getItem().isEmpty() ||
+                    menu.getSlot(BOOK_SLOT).getItem().isEmpty() ||
+                    !menu.getSlot(ITEM_SLOT).getItem().isDamageableItem() ||
+                    !menu.getSlot(BOOK_SLOT).getItem().is(Items.ENCHANTED_BOOK)))
+                slots.add(new InfoSlot(DIAMOND_ICON, Component.literal("Enchanting requires item and enchanted book"), true));
+            else if (clientState.getMode() == 0)
+                slots.add(new InfoSlot(DIAMOND_ICON, Component.literal("Enchanting mode"), false));
+
+            if (clientState.getMode() == 1 && (
+                    menu.getSlot(ITEM_SLOT).getItem().isEmpty() ||
+                    menu.getSlot(BOOK_SLOT).getItem().isEmpty() ||
+                    !menu.getSlot(ITEM_SLOT).getItem().isDamageableItem() ||
+                    !menu.getSlot(BOOK_SLOT).getItem().is(Items.BOOK)))
+                slots.add(new InfoSlot(DIAMOND_ICON, Component.literal("Disenchanting requires enchanted item and plain book"), true));
+            else if (clientState.getMode() == 1)
+                slots.add(new InfoSlot(DIAMOND_ICON, Component.literal("Disenchanting mode"), false));
+        }
+
+        // Tool break chance
+        if (clientState.hasTooMuchGlowstoneDust()) {
+            slots.add(new InfoSlot(GLOWSTONE_ICON, Component.literal("Max one Glowstone Dust"), true));
+        } else {
+            slots.add(new InfoSlot(GLOWSTONE_ICON, Component.literal("Tool break chance: " + Math.round(clientState.getToolBreakChance() * 100) + "%"), false));
+        }
+
+        // Fail chance
+        slots.add(new InfoSlot(REDSTONE_ICON, Component.literal("Fail chance: " + Math.round(clientState.getFailChance() * 100) + "%"), false));
+
+        // Enchanting cost
+        if (clientState.getReducePowerMultiplier() < 1 && clientState.getMode() == 0)
+            slots.add(new InfoSlot(ENCHANT_ICON, Component.literal("Enchanting power cost is decreased by: " + Math.round(100 - clientState.getReducePowerMultiplier() * 100) + "%"), false));
+        if (clientState.getReducePowerMultiplier() < 1 && clientState.getMode() == 1)
+            slots.add(new InfoSlot(ENCHANT_ICON, Component.literal("Enchanting powder is not usable while disenchanting."), true));
+
+
+        // Curse prevention
+        if (clientState.hasTooMuchSugar())
+            slots.add(new InfoSlot(SUGAR_ICON, Component.literal("Max one Sugar"), true));
+        else if (clientState.getCursesLocked())
+            slots.add(new InfoSlot(SUGAR_ICON, Component.literal("Prevents curses from appearing"), false));
+
+        // Enchantment locking
+        if (clientState.hasTooMuchAmethystDust())
+            slots.add(new InfoSlot(AMETHYST_ICON, Component.literal("Max one Amethyst dust"), true));
+        else if (clientState.getExistingEnchantsLocked() && clientState.getMode() == 1)
+            slots.add(new InfoSlot(AMETHYST_ICON, Component.literal("Amethyst powder is usable only while enchanting."), true));
+        else if (clientState.getExistingEnchantsLocked() && clientState.getMode()    == 0)
+            slots.add(new InfoSlot(AMETHYST_ICON, Component.literal("Prevents replacing enchantments that are already on the item."), false));
+
+        // Disenchanting efficiency
+        if (clientState.getDisenchantEfficiency() < 1 && clientState.getMode() == 0)
+            slots.add(new InfoSlot(ECHO_ICON, Component.literal("Echo powder is usable only while disenchanting."), true));
+        if (clientState.getDisenchantEfficiency() < 1 && clientState.getMode() == 1)
+            slots.add(new InfoSlot(ECHO_ICON, Component.literal("Disenchanting will decrease the cost of the book by " + Math.round(100 - clientState.getDisenchantEfficiency() * 100) + "%"), false));
+
+        // Extra enchants
+
+        // Upgrade chance
+
         return slots;
     }
 

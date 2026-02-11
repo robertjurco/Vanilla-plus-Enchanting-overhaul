@@ -98,7 +98,7 @@ public class EnchantingScreen extends AbstractContainerScreen<EnchantingMenu> {
 
         refreshInfoPanel();
 
-        infoPanel = new InfoScrollPanel(Minecraft.getInstance(), INFO_PANEL_SCROLL_WIDTH, INFO_PANEL_SCROLL_HEIGHT, infoPanelX, infoPanelY, this.font);
+        infoPanel = new InfoScrollPanel(Minecraft.getInstance(), INFO_PANEL_SCROLL_WIDTH, INFO_PANEL_SCROLL_HEIGHT, infoPanelX, infoPanelY, this.font, menu);
         reloadWidgets();
     }
 
