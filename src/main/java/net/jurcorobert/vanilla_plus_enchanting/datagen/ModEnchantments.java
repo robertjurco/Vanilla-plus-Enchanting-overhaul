@@ -70,7 +70,7 @@ public class ModEnchantments {
                 new EnchantmentAttributeEffect(
                         Identifier.fromNamespaceAndPath(ModConstants.MOD_ID, "sprint"),
                         Attributes.MOVEMENT_SPEED,
-                        LevelBasedValue.perLevel(0.075F), // +5% per level
+                        LevelBasedValue.perLevel(0.1F),
                         AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL
                 )
         ));

@@ -5,8 +5,6 @@ import net.jurcorobert.vanilla_plus_enchanting.common.enchanting_power.Enchantin
 import net.jurcorobert.vanilla_plus_enchanting.common.enchanting_power.EnchantingPowerManager;
 import net.jurcorobert.vanilla_plus_enchanting.common.registry.ModItems;
 import net.jurcorobert.vanilla_plus_enchanting.common.utils.EnchantmentHelper;
-import net.jurcorobert.vanilla_plus_enchanting.common.villager.EnchantedItemTradePool;
-import net.jurcorobert.vanilla_plus_enchanting.constants.ModConstants;
 import net.jurcorobert.vanilla_plus_enchanting.constants.ModTags;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
@@ -22,7 +20,6 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.ItemEnchantments;
-import net.neoforged.fml.common.Mod;
 import org.jspecify.annotations.NonNull;
 
 import java.util.*;
@@ -52,6 +49,7 @@ public class EnchantingMenuData {
     private static final int DYE_SLOT = 5;
 
     private static final int REQUIRED_BOOKSHELVES = 16;
+    private static final float EXTRA_ENCHANT_POWER_MULTIPLIER = 1f;
 
     private final BlockPos pos;
     private final ServerLevel level;
@@ -68,7 +66,7 @@ public class EnchantingMenuData {
     // ---- Dust / Modifier Utilities ---- //
 
     private void consumeOneDust() {
-        for (int slot = 2; slot <= 4; slot++) {
+        for (int slot = 2; slot <= 5; slot++) {
             ItemStack stack = container.getItem(slot);
             if (!stack.isEmpty()) {
                 stack.shrink(1);
@@ -137,8 +135,6 @@ public class EnchantingMenuData {
 
     public boolean hasTooMuchAmethystDust() {return countDust(ModItems.AMETHYST_POWDER.get()) > 1;}
 
-    public boolean hasApplicableEnchantments() {return !getEnchantsToApply().isEmpty();}
-
     public boolean hasNonCurseEnchantments() {
         ItemStack item = container.getItem(ITEM_SLOT);
         if (item.isEmpty() || !item.isDamageableItem())
@@ -156,6 +152,93 @@ public class EnchantingMenuData {
 
         return false;
     }
+
+    public boolean hasApplicableEnchants() {return !getEnchantsToApply().isEmpty();}
+
+    public boolean hasExtraEnchant() {return !getPossibleExtraEnchants().isEmpty();}
+
+    public boolean hasUpgradableEnchant() {return false;}
+
+    private int powerToApply() {
+        ItemStack item = container.getItem(ITEM_SLOT);
+
+        List<EnchantEntry> toApply = getEnchantsToApply();
+        List<EnchantEntry> toRemove = getEnchantsToRemove();
+
+        int power = EnchantingPower.get(item);
+
+        // Remove
+        for (EnchantEntry entry : toRemove)
+            power += entry.power();
+
+        // Apply
+        for (EnchantEntry entry : toApply)
+            power -= entry.power();
+
+        return  power;
+    }
+
+    public boolean hasEnoughPowerToApply() {
+        return powerToApply() > 0;
+    }
+
+    public boolean hasEnoughPowerForExtra() {
+        return getExtraEnchant() != null;
+    }
+
+    public boolean hasEnoughPowerToUpgrade() {
+        ItemStack item = container.getItem(ITEM_SLOT);
+
+        List<EnchantEntry> toApply = getEnchantsToApply();
+        List<EnchantEntry> toRemove = getEnchantsToRemove();
+
+        int power = EnchantingPower.get(item);
+
+        // Remove
+        for (EnchantEntry entry : toRemove)
+            power += entry.power();
+
+        // Apply
+        for (EnchantEntry entry : toApply)
+            power -= entry.power();
+
+        return  power > 0;
+    }
+
+    public boolean canUpgradeLevelDisenchant() {
+        return !getUpgradableDisenchant().isEmpty();
+    }
+
+    public List<Holder<Enchantment>> getUpgradableDisenchant() {
+        // load stuff
+        ItemStack tool = container.getItem(ITEM_SLOT);
+        ItemStack enchantedBook = EnchantmentHelper.getBookFromItem(tool);
+        if (enchantedBook.isEmpty())
+            return List.of();
+
+        // remove curses
+        if (!getCursesLocked()) {
+            removeCursesFromBook(enchantedBook);
+        }
+
+        // Get current stored enchantments
+        ItemEnchantments current = enchantedBook.getOrDefault(DataComponents.STORED_ENCHANTMENTS, ItemEnchantments.EMPTY);
+        if (current.isEmpty())
+            return List.of();
+        ItemEnchantments.Mutable mutable = new ItemEnchantments.Mutable(current);
+
+        // Filter enchants that can be upgraded
+        List<Holder<Enchantment>> upgradable = new ArrayList<>();
+        for (Holder<Enchantment> holder : mutable.keySet()) {
+            int level = mutable.getLevel(holder);
+            int maxLevel = holder.value().definition().maxLevel();
+            if (level < maxLevel + 1 && maxLevel != 1)
+                upgradable.add(holder);
+        }
+
+        return upgradable;
+    }
+
 
     // ----- special ----- //
 
@@ -292,6 +375,84 @@ public class EnchantingMenuData {
         return toRemove;
     }
 
+    public List<EnchantEntry> getPossibleExtraEnchants() {
+        ItemStack item = container.getItem(ITEM_SLOT);
+        ItemStack stack = getMode() == 0 ? container.getItem(ITEM_SLOT) : container.getItem(BOOK_SLOT);
+
+        // For enchanting mode we need enchants to avoid
+        ItemEnchantments current = item.getOrDefault(DataComponents.ENCHANTMENTS, ItemEnchantments.EMPTY);
+        Set<Holder<Enchantment>> appliedOnItem = new HashSet<>(current.keySet());
+        List<EnchantEntry> toApply = getEnchantsToApply();
+
+        if (stack.isEmpty())
+            return List.of();
+
+        List<EnchantEntry> result = new ArrayList<>();
+
+        // REUSE your existing function
+        for (Holder<Enchantment> holder : EnchantmentHelper.getPossibleEnchantments(stack)) {
+            Enchantment enchantment = holder.value();
+
+            // Skip curses if locked
+            if (holder.is(EnchantmentTags.CURSE) && getCursesLocked())
+                continue;
+
+            // Skip if in enchanting mode and already applied or incompatible with already applied
+            if (getMode() == 0){
+                boolean compatible = true;
+
+                // Applied on item
+                for (Holder<Enchantment> existing : appliedOnItem) {
+                    if (!Enchantment.areCompatible(existing, holder)) {
+                        compatible = false;
+                        break;
+                    }
+                }
+
+                // In to Apply list
+                for (EnchantEntry existing : toApply) {
+                    if (!Enchantment.areCompatible(existing.enchantment(), holder)) {
+                        compatible = false;
+                        break;
+                    }
+                }
+
+                if (!compatible) continue;
+            }
+
+            // Expand per-level
+            int min = enchantment.getMinLevel();
+            int max = enchantment.getMaxLevel();
+
+            for (int level = min; level <= max; level++) {
+                int power = EnchantingPowerManager.getEnchantPower(holder, level);
+
+                result.add(new EnchantEntry(holder, level, Math.round(power * EXTRA_ENCHANT_POWER_MULTIPLIER)));
+            }
+        }
+        System.out.println(result);
+        return result;
+    }
+
+    public EnchantEntry getExtraEnchant() {
+        int leftPower = powerToApply();
+        List<EnchantEntry> possibleEnchants = getPossibleExtraEnchants();
+
+        // Filter only the ones we can afford with remaining power
+        List<EnchantEntry> affordable = new ArrayList<>();
+        for (EnchantEntry entry : possibleEnchants)
+            if (entry.power() <= leftPower)
+                affordable.add(entry);
+
+        // No enchant can be applied
+        if (affordable.isEmpty())
+            return null;
+
+        // Pick one at random
+        Random rand = new Random();
+        return affordable.get(rand.nextInt(affordable.size()));
+    }
+
     private void  removeCursesFromBook(ItemStack book) {
         ItemEnchantments enchants = book.get(DataComponents.STORED_ENCHANTMENTS);
         if (enchants == null || enchants.isEmpty()) return;
@@ -363,7 +524,11 @@ public class EnchantingMenuData {
             return false;
         if (hasTooMuchAmethystDust() || hasTooMuchGlowstoneDust() || hasTooMuchSugar())
             return false;
-        if (!hasApplicableEnchantments())
+        if (!hasApplicableEnchants() || !hasEnoughPowerToApply())
+            return false;
+        if (getExtraEnchantChance() > 0 && (!hasExtraEnchant() || !hasEnoughPowerForExtra()))
+            return false;
+        if (getUpgradeLevelChance() > 0 && (!hasUpgradableEnchant() || !hasEnoughPowerToUpgrade()))
             return false;
         // power check
         return true;
@@ -404,11 +569,19 @@ public class EnchantingMenuData {
             return;
         }
 
-        // prepare item, enchanting power, list of applied enchants
+        // Prepare item, enchanting power, list of applied enchants
         ItemStack output = item.copy();
         List<EnchantEntry> toApply = getEnchantsToApply();
         List<EnchantEntry> toRemove = getEnchantsToRemove();
 
+        // Extra enchant
+        if (rand.nextFloat() < getExtraEnchantChance()) {
+            EnchantEntry extra = getExtraEnchant();
+            if (extra != null) {
+                // Apply the extra enchant directly
+                toApply.add(extra);
+            }
+        }
 
         // apply enchants
         applyEnchantments(output, toApply, toRemove);
@@ -461,14 +634,47 @@ public class EnchantingMenuData {
             removeCursesFromBook(enchantedBook);
         }
 
+        // Upgrade level
+        if (rand.nextFloat() < getUpgradeLevelChance()) {
+            // Get current stored enchantments
+            ItemEnchantments current = enchantedBook.getOrDefault(DataComponents.STORED_ENCHANTMENTS, ItemEnchantments.EMPTY);
+            if (current.isEmpty()) return;
+            ItemEnchantments.Mutable mutable = new ItemEnchantments.Mutable(current);
+
+            // Pick random upgradable
+            List<Holder<Enchantment>> upgradable = getUpgradableDisenchant();
+            Holder<Enchantment> chosen = upgradable.get(rand.nextInt(upgradable.size()));
+
+            int currentLevel = mutable.getLevel(chosen);
+            int maxLevel = chosen.value().definition().maxLevel();
+
+            // Upgrade level safely
+            if (currentLevel < maxLevel + 1 && maxLevel != 1) {
+                mutable.set(chosen, currentLevel + 1);
+            }
+
+            // Write back to the book
+            enchantedBook.set(DataComponents.STORED_ENCHANTMENTS, mutable.toImmutable());
+        }
+
+        // Extra enchant
+        if (rand.nextFloat() < getExtraEnchantChance()) {
+            EnchantEntry extra = getExtraEnchant();
+            if (extra != null) {
+                // Get current stored enchantments
+                ItemEnchantments current = enchantedBook.getOrDefault(DataComponents.STORED_ENCHANTMENTS, ItemEnchantments.EMPTY);
+                ItemEnchantments.Mutable mutable = new ItemEnchantments.Mutable(current);
+
+                // Add the new enchant
+                mutable.set(extra.enchantment(), extra.level());
+
+                // Write back to the book
+                enchantedBook.set(DataComponents.STORED_ENCHANTMENTS, mutable.toImmutable());
+            }
+        }
+
         // Transferred power
         int transferredPower = Math.round(EnchantingPowerManager.calculateBaseBookPower(enchantedBook) * getDisenchantEfficiency());
-
-        // Netherite upgrade
-        // transferredPower += tryUpgradeBookEnchant(enchantedBook);
-
-        // Gunpowder extra enchant
-        // transferredPower += applyGunpowderExtraEnchantToBook(enchantedBook);
 
         // set enchants to book
         EnchantingPower.set(enchantedBook, transferredPower);
@@ -514,11 +720,18 @@ public class EnchantingMenuData {
                 hasTooMuchGlowstoneDust(),
                 hasTooMuchDiamondDust(),
                 hasTooMuchAmethystDust(),
-                hasApplicableEnchantments(),
+
                 hasNonCurseEnchantments(),
 
-                canEnchant(),
-                canDisenchant()
+                hasApplicableEnchants(),
+                hasExtraEnchant(),
+                hasUpgradableEnchant(),
+
+                hasEnoughPowerToApply(),
+                hasEnoughPowerForExtra(),
+                hasEnoughPowerToUpgrade(),
+
+                canUpgradeLevelDisenchant()
         );
     }
 

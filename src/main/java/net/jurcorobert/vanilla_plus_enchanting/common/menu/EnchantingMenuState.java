@@ -20,11 +20,18 @@ public record EnchantingMenuState(
         boolean hasTooMuchGlowstoneDust,
         boolean hasTooMuchDiamondDust,
         boolean hasTooMuchAmethystDust,
-        boolean hasApplicableEnchantments,
+
         boolean hasNonCurseEnchantments,
 
-        boolean canEnchant,
-        boolean canDisenchant
+        boolean hasApplicableEnchants,
+        boolean hasExtraEnchant,
+        boolean hasUpgradableEnchant,
+
+        boolean hasEnoughPowerToApply,
+        boolean hasEnoughPowerForExtra,
+        boolean hasEnoughPowerToUpgrade,
+
+        boolean canUpgradeLevelDisenchant
 ) {
     // Static method returning default instance
     public static EnchantingMenuState defaults() {
@@ -43,11 +50,18 @@ public record EnchantingMenuState(
                 false,   // hasTooMuchGlowstoneDust
                 false,   // hasTooMuchDiamondDust
                 false,   // hasTooMuchAmethystDust
-                false,   // hasApplicableEnchantments
-                false,   // hasNonCurseEnchantments
 
-                false,  // canEnchant
-                false   // canDisenchant
+                false,    // hasNonCurseEnchantments
+
+                false,   // hasApplicableEnchants
+                false,   // hasExtraEnchant
+                false,   // hasUpgradableEnchant
+
+                false,   // hasEnoughPowerToApply
+                false,   // hasEnoughPowerForExtra
+                false,   // hasEnoughPowerToUpgrade
+
+                false   // canUpgradeLevelDisenchant
         );
     }
 
@@ -68,11 +82,18 @@ public record EnchantingMenuState(
                         buf.writeBoolean(state.hasTooMuchGlowstoneDust());
                         buf.writeBoolean(state.hasTooMuchDiamondDust());
                         buf.writeBoolean(state.hasTooMuchAmethystDust());
-                        buf.writeBoolean(state.hasApplicableEnchantments());
+
                         buf.writeBoolean(state.hasNonCurseEnchantments());
 
-                        buf.writeBoolean(state.canEnchant());
-                        buf.writeBoolean(state.canDisenchant());
+                        buf.writeBoolean(state.hasApplicableEnchants());
+                        buf.writeBoolean(state.hasExtraEnchant());
+                        buf.writeBoolean(state.hasUpgradableEnchant());
+
+                        buf.writeBoolean(state.hasEnoughPowerToApply());
+                        buf.writeBoolean(state.hasEnoughPowerForExtra());
+                        buf.writeBoolean(state.hasEnoughPowerToUpgrade());
+
+                        buf.writeBoolean(state.canUpgradeLevelDisenchant());
                     },
                     buf -> new EnchantingMenuState(
                             buf.readInt(),     // getMode
@@ -89,11 +110,18 @@ public record EnchantingMenuState(
                             buf.readBoolean(), // hasTooMuchGlowstoneDust
                             buf.readBoolean(), // hasTooMuchDiamondDust
                             buf.readBoolean(),  // hasTooMuchAmethystDust
-                            buf.readBoolean(),  // hasApplicableEnchantments
-                            buf.readBoolean(),  // hasNonCurseEnchantments
 
-                            buf.readBoolean(), // canEnchant
-                            buf.readBoolean()  // canDisenchant
+                            buf.readBoolean(),   // hasNonCurseEnchantments
+
+                            buf.readBoolean(),   // hasApplicableEnchants
+                            buf.readBoolean(),   // hasExtraEnchant
+                            buf.readBoolean(),   // hasUpgradableEnchant
+
+                            buf.readBoolean(),   // hasEnoughPowerToApply
+                            buf.readBoolean(),   // hasEnoughPowerForExtra
+                            buf.readBoolean(),   // hasEnoughPowerToUpgrade
+
+                            buf.readBoolean()    // canUpgradeLevelDisenchant
                     )
             );
 }

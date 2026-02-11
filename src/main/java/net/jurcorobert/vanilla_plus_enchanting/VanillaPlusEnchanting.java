@@ -98,7 +98,7 @@ public class VanillaPlusEnchanting {
     // You can use SubscribeEvent and let the Event Bus discover methods to call
     @SubscribeEvent
     public void onServerStarting(ServerStartingEvent event) {
-
+        ModConstants.SERVER = event.getServer();
     }
 
     @EventBusSubscriber(modid = ModConstants.MOD_ID, value = Dist.CLIENT)

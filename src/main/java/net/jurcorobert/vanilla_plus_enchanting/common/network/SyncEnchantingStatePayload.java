@@ -43,11 +43,18 @@ public record SyncEnchantingStatePayload(EnchantingMenuState state) implements C
         buf.writeBoolean(payload.state().hasTooMuchGlowstoneDust());
         buf.writeBoolean(payload.state().hasTooMuchDiamondDust());
         buf.writeBoolean(payload.state().hasTooMuchAmethystDust());
-        buf.writeBoolean(payload.state().hasApplicableEnchantments());
+
         buf.writeBoolean(payload.state().hasNonCurseEnchantments());
 
-        buf.writeBoolean(payload.state().canEnchant());
-        buf.writeBoolean(payload.state().canDisenchant());
+        buf.writeBoolean(payload.state().hasApplicableEnchants());
+        buf.writeBoolean(payload.state().hasExtraEnchant());
+        buf.writeBoolean(payload.state().hasUpgradableEnchant());
+
+        buf.writeBoolean(payload.state().hasEnoughPowerToApply());
+        buf.writeBoolean(payload.state().hasEnoughPowerForExtra());
+        buf.writeBoolean(payload.state().hasEnoughPowerToUpgrade());
+
+        buf.writeBoolean(payload.state().canUpgradeLevelDisenchant());
     }
 
     public static SyncEnchantingStatePayload decode(FriendlyByteBuf buf) {
@@ -66,11 +73,17 @@ public record SyncEnchantingStatePayload(EnchantingMenuState state) implements C
                 buf.readBoolean(), // hasTooMuchGlowstoneDust
                 buf.readBoolean(), // hasTooMuchDiamondDust
                 buf.readBoolean(),  // hasTooMuchAmethystDust
-                buf.readBoolean(),  // hasApplicableEnchantments
-                buf.readBoolean(),  // hasNonCurseEnchantments
 
-                buf.readBoolean(), // canEnchant
-                buf.readBoolean()  // canDisenchant
+                buf.readBoolean(),   // hasNonCurseEnchantments
+
+                buf.readBoolean(),   // hasApplicableEnchants
+                buf.readBoolean(),   // hasExtraEnchant
+                buf.readBoolean(),   // hasUpgradableEnchant
+
+                buf.readBoolean(),   // hasEnoughPowerToApply
+                buf.readBoolean(),   // hasEnoughPowerForExtra
+                buf.readBoolean(),   // hasEnoughPowerToUpgrade
+                buf.readBoolean()    // canUpgradeLevelDisenchant
         ));
     }
 

@@ -111,10 +111,18 @@ public class InfoScrollPanel extends ScrollPanel {
         // Experience
 
         // Power
+        if (clientState.getMode() == 0 &
+                !menu.getSlot(ITEM_SLOT).getItem().isEmpty() &&
+                !menu.getSlot(BOOK_SLOT).getItem().isEmpty() &&
+                !clientState.hasEnoughPowerToApply() &
+                !clientState.hasEnoughPowerForExtra() &
+                !clientState.hasEnoughPowerToUpgrade())
+            slots.add(new InfoSlot(EXP_BLUE_ICON, Component.literal("Not enough enchanting power"), true));
+
 
         // Applicable enchantments
         if (clientState.getMode() == 0 &&
-                !clientState.hasApplicableEnchantments() &&
+                !clientState.hasApplicableEnchants() &&
                 !menu.getSlot(ITEM_SLOT).getItem().isEmpty() &&
                 !menu.getSlot(BOOK_SLOT).getItem().isEmpty() &&
                 menu.getSlot(ITEM_SLOT).getItem().isDamageableItem() &&
@@ -191,8 +199,19 @@ public class InfoScrollPanel extends ScrollPanel {
             slots.add(new InfoSlot(ECHO_ICON, Component.literal("Disenchanting will decrease the cost of the book by " + Math.round(100 - clientState.getDisenchantEfficiency() * 100) + "%"), false));
 
         // Extra enchants
+        if (clientState.getExtraEnchantChance() > 0) {
+            if (!clientState.hasExtraEnchant() && clientState.getMode() == 0) slots.add(new InfoSlot(GUNPOWDER_ICON, Component.literal("No extra enchantments exist for this item."), true));
+            else if (!clientState.hasEnoughPowerForExtra() && clientState.getMode() == 0) slots.add(new InfoSlot(GUNPOWDER_ICON, Component.literal("Not enough power for extra enchantments."), true));
+            else slots.add(new InfoSlot(GUNPOWDER_ICON, Component.literal("Extra enchantment chance: " + Math.round(clientState.getExtraEnchantChance() * 100) + "%"), false));
+        }
 
         // Upgrade chance
+        if (clientState.getUpgradeLevelChance() > 0) {
+            if (!clientState.hasUpgradableEnchant() && clientState.getMode() == 0) slots.add(new InfoSlot(NETHERITE_ICON, Component.literal("No upgrades available."), true));
+            else if (!clientState.canUpgradeLevelDisenchant() && clientState.getMode() == 1) slots.add(new InfoSlot(NETHERITE_ICON, Component.literal("No upgrades available."), true));
+            else if (!clientState.hasEnoughPowerToUpgrade() && clientState.getMode() == 0) slots.add(new InfoSlot(NETHERITE_ICON, Component.literal("Not enough power to upgrade enchantment."), true));
+            else slots.add(new InfoSlot(NETHERITE_ICON, Component.literal("Upgrade level chance: " + Math.round(clientState.getUpgradeLevelChance() * 100) + "%"), false));
+        }
 
         return slots;
     }
