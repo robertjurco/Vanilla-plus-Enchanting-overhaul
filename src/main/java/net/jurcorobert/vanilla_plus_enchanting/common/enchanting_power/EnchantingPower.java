@@ -4,6 +4,7 @@ import net.jurcorobert.vanilla_plus_enchanting.constants.ModConstants;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.item.component.CustomData;
 
 public class EnchantingPower {
@@ -29,6 +30,22 @@ public class EnchantingPower {
         }
         else {
             ench_power = readValue(stack);
+        }
+
+
+        // Taking item from creative
+        if (ench_power == -1){
+            if (stack.is(Items.ENCHANTED_BOOK))
+                ench_power = EnchantingPowerManager.calculateBaseBookPower(stack);
+
+            if (stack.isDamageableItem())
+                ench_power = EnchantingPowerManager.getRandomPowerCrafted(stack);
+
+            set(stack, ench_power);
+
+            ModConstants.LOGGER.info("Creative item Enchanting power set.");
+
+            return ench_power;
         }
 
         return ench_power;
