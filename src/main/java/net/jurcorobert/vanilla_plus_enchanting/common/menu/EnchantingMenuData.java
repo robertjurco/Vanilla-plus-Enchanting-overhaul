@@ -137,7 +137,7 @@ public class EnchantingMenuData {
 
     public boolean hasTooMuchAmethystDust() {return countDust(ModItems.AMETHYST_POWDER.get()) > 1;}
 
-    public boolean hasApplicableEnchantments() {return !getApplicableEnchantments().isEmpty();}
+    public boolean hasApplicableEnchantments() {return !getEnchantsToApply().isEmpty();}
 
     public boolean hasNonCurseEnchantments() {
         ItemStack item = container.getItem(ITEM_SLOT);
@@ -159,7 +159,7 @@ public class EnchantingMenuData {
 
     // ----- special ----- //
 
-    public List<EnchantEntry> getApplicableEnchantments() {
+    public List<EnchantEntry> getApplicableEnchantmentsFromBook() {
         ItemStack item = container.getItem(ITEM_SLOT);
         ItemStack book = container.getItem(BOOK_SLOT);
 
@@ -176,16 +176,14 @@ public class EnchantingMenuData {
         float coef = (float) realPower / basePower;
 
 
-        // Get or create enchantment component
-        ItemEnchantments current = item.getOrDefault(DataComponents.ENCHANTMENTS, ItemEnchantments.EMPTY);
-
         // Prepare return
-        Set<Holder<Enchantment>> appliedAndApplicable = new HashSet<>(current.keySet());
         List<EnchantEntry> applicable = new ArrayList<>();
 
-        // Read enchantments from the book using your helper
-        for (Object2IntMap.Entry<Holder<Enchantment>> entry : EnchantmentHelper.getItemEnchantments(book)) {
+        // Read enchantments from the book using helper
+        List<Object2IntMap.Entry<Holder<Enchantment>>> enchants = new ArrayList<>(EnchantmentHelper.getItemEnchantments(book));
+        Collections.shuffle(enchants, new Random());
 
+        for (Object2IntMap.Entry<Holder<Enchantment>> entry : enchants) {
             Holder<Enchantment> holder = entry.getKey();
             Enchantment enchantment = holder.value();
 
@@ -197,8 +195,8 @@ public class EnchantingMenuData {
 
             // Skip if already applied or incompatible with already applied
             boolean compatible = true;
-            for (Holder<Enchantment> existing : appliedAndApplicable) {
-                if (!Enchantment.areCompatible(existing, holder)) {
+            for (EnchantEntry existing : applicable) {
+                if (!Enchantment.areCompatible(existing.enchantment(), holder)) {
                     compatible = false;
                     break;
                 }
@@ -214,11 +212,84 @@ public class EnchantingMenuData {
             int level = entry.getIntValue();
             int power = EnchantingPowerManager.getEnchantPower(holder, level);
             applicable.add(new EnchantEntry(holder, level, Math.round(power * coef * getReducePowerMultiplier())));
-            appliedAndApplicable.add(holder);
         }
 
-        System.out.println(applicable);
         return applicable;
+    }
+
+    public List<EnchantEntry> getEnchantsToApply() {
+        ItemStack item = container.getItem(ITEM_SLOT);
+        ItemStack book = container.getItem(BOOK_SLOT);
+
+        // Basic validation
+        if (item.isEmpty() || book.isEmpty() || !item.isDamageableItem() || !book.is(Items.ENCHANTED_BOOK))
+            return List.of();
+
+        // Get or create enchantment component
+        ItemEnchantments current = item.getOrDefault(DataComponents.ENCHANTMENTS, ItemEnchantments.EMPTY);
+        Set<Holder<Enchantment>> appliedOnItem = new HashSet<>(current.keySet());
+
+        // Prepare return
+        List<EnchantEntry> applicable = new ArrayList<>();
+
+        // Read enchantments from the book using your helper
+        for (EnchantEntry entry : getApplicableEnchantmentsFromBook()) {
+
+            Holder<Enchantment> holder = entry.enchantment();
+
+            // Skip if already applied or incompatible with already applied
+            if (getExistingEnchantsLocked()){
+                boolean compatible = true;
+                for (Holder<Enchantment> existing : appliedOnItem) {
+                    if (!Enchantment.areCompatible(existing, holder)) {
+                        compatible = false;
+                        break;
+                    }
+                }
+                if (!compatible) continue;
+            }
+
+            // add enchant
+            applicable.add(entry);
+        }
+
+        return applicable;
+    }
+
+    public List<EnchantEntry> getEnchantsToRemove() {
+        ItemStack item = container.getItem(ITEM_SLOT);
+        ItemStack book = container.getItem(BOOK_SLOT);
+
+        // Basic validation
+        if (item.isEmpty() || book.isEmpty() || !item.isDamageableItem() || !book.is(Items.ENCHANTED_BOOK))
+            return List.of();
+
+        // If existing enchants are locked, nothing can be removed
+        if (getExistingEnchantsLocked())
+            return List.of();
+
+        // Enchants currently on the item
+        ItemEnchantments current = item.getOrDefault(DataComponents.ENCHANTMENTS, ItemEnchantments.EMPTY);
+        Set<Holder<Enchantment>> appliedOnItem = new HashSet<>(current.keySet());
+
+        // Prepare return
+        List<EnchantEntry> toRemove = new ArrayList<>();
+
+        // Enchants coming from the book
+        for (EnchantEntry entry : getApplicableEnchantmentsFromBook()) {
+            Holder<Enchantment> incoming = entry.enchantment();
+
+            for (Holder<Enchantment> existing : appliedOnItem) {
+                // If NOT compatible → mark existing enchant for removal
+                if (!Enchantment.areCompatible(existing, incoming)) {
+                    int level = current.getLevel(existing);
+                    int power = EnchantingPowerManager.getEnchantPower(existing, level);
+                    toRemove.add(new EnchantEntry(existing, level, power));
+                }
+            }
+        }
+
+        return toRemove;
     }
 
     private void  removeCursesFromBook(ItemStack book) {
@@ -236,21 +307,31 @@ public class EnchantingMenuData {
 
             rebuilt.set(ench, level);
         }
+
+        book.set(DataComponents.STORED_ENCHANTMENTS, rebuilt.toImmutable());
     }
 
-    public void applyEnchantments(ItemStack stack, List<EnchantEntry> enchantments) {
-        if (stack.isEmpty() || enchantments.isEmpty())
+    public void applyEnchantments(ItemStack stack, List<EnchantEntry> toApply, List<EnchantEntry> toRemove) {
+        if (stack.isEmpty() || toApply.isEmpty())
             return;
 
         int appliedPower = 0;
+        int removedPower = 0;
 
         // Get or create enchantment component
         ItemEnchantments current = stack.getOrDefault(DataComponents.ENCHANTMENTS, ItemEnchantments.EMPTY);
         ItemEnchantments.Mutable mutable = new ItemEnchantments.Mutable(current);
 
-        // Track already applied holders for compatibility
+        // Remove
+        for (EnchantEntry entry : toRemove) {
+            Holder<Enchantment> holder = entry.enchantment();
+            mutable.set(holder, 0); // level <= 0 removes enchant
 
-        for (EnchantEntry entry : enchantments) {
+            removedPower += entry.power();
+        }
+
+        // Apply
+        for (EnchantEntry entry : toApply) {
             Holder<Enchantment> holder = entry.enchantment();
             int level = entry.level();
 
@@ -258,13 +339,19 @@ public class EnchantingMenuData {
             mutable.set(holder, level);
 
             // Reduce power
-            appliedPower += entry.power;
+            appliedPower += entry.power();
         }
 
         // Write back to the item
         int originalPower = EnchantingPower.get(stack);
         stack.set(DataComponents.ENCHANTMENTS, mutable.toImmutable());
-        EnchantingPower.set(stack, originalPower - appliedPower);
+
+        // Fix power
+        int newPower = originalPower - appliedPower + removedPower;
+        if (newPower < 0)
+            throw new IllegalStateException("[Vanilla+ Enchanting] EnchantingPower underflow!\n");
+        EnchantingPower.set(stack, newPower);
+
     }
 
     // ----- Main Logic ---- //
@@ -318,13 +405,13 @@ public class EnchantingMenuData {
         }
 
         // prepare item, enchanting power, list of applied enchants
-        int remainingPower = EnchantingPower.get(item);
         ItemStack output = item.copy();
-        List<EnchantEntry> toApply = getApplicableEnchantments();
+        List<EnchantEntry> toApply = getEnchantsToApply();
+        List<EnchantEntry> toRemove = getEnchantsToRemove();
 
 
         // apply enchants
-        applyEnchantments(output, toApply);
+        applyEnchantments(output, toApply, toRemove);
 
         // set output
         container.setItem(ITEM_SLOT, output);
