@@ -31,8 +31,11 @@ public class EnchantingScreen extends AbstractContainerScreen<EnchantingMenu> {
     // ---- Textures ---- //
     private static final Identifier GUI_TEXTURE = Identifier.fromNamespaceAndPath(ModConstants.MOD_ID, "textures/gui/custom_enchanting.png");
     private static final Identifier INFO_PANEL_TEXTURE = Identifier.fromNamespaceAndPath(ModConstants.MOD_ID, "textures/gui/info_panel.png");
+
     private static final Identifier ARROW_RIGHT_TEXTURE = Identifier.fromNamespaceAndPath(ModConstants.MOD_ID, "textures/gui/arrow_right.png");
     private static final Identifier ARROW_LEFT_TEXTURE = Identifier.fromNamespaceAndPath(ModConstants.MOD_ID, "textures/gui/arrow_left.png");
+    private static final Identifier ARROW_RIGHT_CROSSED_TEXTURE = Identifier.fromNamespaceAndPath(ModConstants.MOD_ID, "textures/gui/arrow_right_crossed.png");
+    private static final Identifier ARROW_LEFT_CROSSED_TEXTURE = Identifier.fromNamespaceAndPath(ModConstants.MOD_ID, "textures/gui/arrow_left_crossed.png");
 
     private static final Identifier INFO_ICON = Identifier.fromNamespaceAndPath("minecraft", "textures/gui/sprites/recipe_book/button.png");
     private static final Identifier INFO_HOVER_ICON = Identifier.fromNamespaceAndPath("minecraft", "textures/gui/sprites/recipe_book/button_highlighted.png");
@@ -71,6 +74,8 @@ public class EnchantingScreen extends AbstractContainerScreen<EnchantingMenu> {
     private boolean infoPanelOpen = false;
 
     private EnchantingMenuState clientState = EnchantingMenuState.defaults();
+
+    private AbstractButton enchantButton;
 
     // ---- Constructor ---- //
     public EnchantingScreen(EnchantingMenu menu, Inventory playerInventory, Component title) {
@@ -118,6 +123,7 @@ public class EnchantingScreen extends AbstractContainerScreen<EnchantingMenu> {
         this.clientState = state;
         ModConstants.LOGGER.info("State sent");
         refreshInfoPanel();
+        updateEnchantButtonTooltip();
     }
 
     private void refreshInfoPanel() {
@@ -143,7 +149,7 @@ public class EnchantingScreen extends AbstractContainerScreen<EnchantingMenu> {
         int w = 20;
         int h = 18;
 
-        AbstractButton enchantButton = new AbstractButton(x, y, w, h, Component.empty()) {
+        enchantButton = new AbstractButton(x, y, w, h, Component.empty()) {
             @Override
             public void onPress(InputWithModifiers inputWithModifiers) {
                 ClientPacketDistributor.sendToServer(new EnchantRequestPayload(menu.containerId));
@@ -163,10 +169,15 @@ public class EnchantingScreen extends AbstractContainerScreen<EnchantingMenu> {
             }
         };
 
-        Component component = clientState.mode() == 0 ? Component.literal("Enchant Item") : Component.literal("Disenchant Item");
-        enchantButton.setTooltip(Tooltip.create(component));
+        updateEnchantButtonTooltip();
 
         this.addRenderableWidget(enchantButton);
+    }
+
+    private void updateEnchantButtonTooltip() {
+        if (enchantButton == null) return;
+        Component tooltip = clientState.getMode() == 0 ? Component.literal("Enchant Item") : Component.literal("Disenchant Item");
+        enchantButton.setTooltip(Tooltip.create(tooltip));
     }
 
     // ---- Info Button ---- //
@@ -234,7 +245,7 @@ public class EnchantingScreen extends AbstractContainerScreen<EnchantingMenu> {
         int x = guiLeft + 90;
         int y = guiTop + 17;
 
-        Identifier tex = clientState.mode() == 0 ? ARROW_RIGHT_TEXTURE : ARROW_LEFT_TEXTURE;
+        Identifier tex = clientState.getMode() == 0 ? ARROW_RIGHT_TEXTURE : ARROW_LEFT_TEXTURE;
 
         gui.blit(RenderPipelines.GUI_TEXTURED, tex, x, y, 0, 0, ARROW_WIDTH, ARROW_HEIGHT, ARROW_WIDTH, ARROW_HEIGHT);
     }
