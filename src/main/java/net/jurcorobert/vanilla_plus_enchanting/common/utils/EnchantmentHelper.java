@@ -42,8 +42,30 @@ public class EnchantmentHelper {
     }
 
     public static List<Object2IntMap.Entry<Holder<Enchantment>>> getItemEnchantments(ItemStack stack) {
-        ItemEnchantments enchants = stack.get(DataComponents.ENCHANTMENTS);
+        ItemEnchantments enchants;
+
+        if (stack.is(Items.ENCHANTED_BOOK)) {
+            enchants = stack.get(DataComponents.STORED_ENCHANTMENTS);
+        } else {
+            enchants = stack.get(DataComponents.ENCHANTMENTS);
+        }
+
         return enchants != null ? new ArrayList<>(enchants.entrySet()) : List.of();
+    }
+
+    public static ItemStack getBookFromItem(ItemStack item) {
+        ItemEnchantments enchantments = item.get(DataComponents.ENCHANTMENTS);
+
+        if (enchantments == null || enchantments.isEmpty()) {
+            return ItemStack.EMPTY;
+        }
+
+        ItemStack book = new ItemStack(Items.ENCHANTED_BOOK);
+
+        // Write enchantments into the book
+        book.set(DataComponents.STORED_ENCHANTMENTS, enchantments);
+
+        return book;
     }
 
     public static List<Holder<Enchantment>> getApplicableEnchantments(ItemStack stack) {
